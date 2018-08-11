@@ -3,18 +3,27 @@ class SpaceTime {
         let direction = opts && opts.timeDirection || 1
         let multiplier = opts && opts.timeMultiplier || 1
 
+        this._debug = false
         this._time = 0
         this._targetTime = 0
         this._timeDirection = direction
         this._timeMultiplier = multiplier
     }
 
+    get debug() {
+        return this._debug
+    }
+
     get time() {
-        return this._time;
+        return this._time
     }
 
     get targetTime() {
-        return this._targetTime;
+        return this._targetTime
+    }
+
+    set debug(v) {
+        this._debug = !!v
     }
 
     get timeDirection() {
@@ -44,14 +53,20 @@ class SpaceTime {
     tick() {
         if (this.timeDirection == 1) {
             this._time += 1
+            player.tick()
 
         } else {
             this._time -= 1
 
-            if (this._time <= this.targetTime)
+            if (this._time <= this.targetTime) {
                 this.timeDirection = 1
+            }
+
+            player.restoreFromTick(this._time)
+            player.popTimeState()
         }
 
-        console.log(`time: ${this.time}, direction: ${this.timeDirection}, target: ${this.targetTime}`)
+        if (this.debug)
+            console.log(`time: ${this.time}, direction: ${this.timeDirection}, target: ${this.targetTime}`)
     }
 }

@@ -6,7 +6,7 @@ var TOFE = {
 
 let isDisplayInitialized = false
 let spaceTime = new SpaceTime({ timeMultiplier: 1 })
-let playerSprite = null
+let player = null
 let numStars = 50 + Math.floor(Math.random() * 50)
 let stars = []
 
@@ -15,7 +15,7 @@ function initializeKontra() {
 
   kontra.init(document.querySelector('canvas'))
 
-  playerSprite = createPlayer()
+  player = createPlayer()
   createStars()
 
   kontra.keys.bind(['enter', 'space'], function() {
@@ -23,10 +23,62 @@ function initializeKontra() {
     flipAndBurn()
   });
 
+    let isPressed = {
+      left: false,
+      right: false,
+      up: false,
+      down: false,
+      space: false,
+      enter: false,
+    }
+
   let loop = kontra.gameLoop({
     update: function() {
       spaceTime.tick()
-      playerSprite.update()
+
+      if (spaceTime.timeDirection > 0) {
+        if (kontra.keys.pressed('left')) {
+          if (!isPressed.left) {
+            isPressed.left = true;
+            player.speed -= 1
+          }
+
+        } else {
+          isPressed.left = false;
+        }
+
+        if (kontra.keys.pressed('right')) {
+          if (!isPressed.right) {
+            isPressed.right = true;
+            player.speed += 1
+          }
+
+        } else {
+          isPressed.right = false;
+        }
+
+        if (kontra.keys.pressed('up')) {
+          if (!isPressed.up) {
+            isPressed.up = true;
+            player.sprite.dy -= 1;
+          }
+
+        } else {
+          isPressed.up = false;
+        }
+
+        if (kontra.keys.pressed('down')) {
+          if (!isPressed.down) {
+            isPressed.down = true;
+            player.sprite.dy += 1;
+          }
+
+        } else {
+          isPressed.down = false;
+        }
+      }
+
+      player.sprite.update()
       
       stars.forEach((s) => {
         s.update()
@@ -42,7 +94,7 @@ function initializeKontra() {
     },
 
     render: function() {
-      playerSprite.render()
+      player.sprite.render()
       stars.forEach((s) => { s.render() })
     }
   })
@@ -52,14 +104,7 @@ function initializeKontra() {
 }
 
 function createPlayer() {
-  return kontra.sprite({
-    x: Math.floor(kontra.canvas.width / 2) - 20,
-    y: Math.floor(kontra.canvas.height / 2) - 10,
-    color: '#00DD00',
-    width: 40,
-    height: 20,
-    dx: 0
-  })
+  return new Player()
 }
 
 function createStars() {
