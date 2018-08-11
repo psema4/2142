@@ -1,15 +1,34 @@
-class Player extends SpaceEntity {
+class SpaceEntity extends TemporalObject {
     constructor(opts = { speed: 0 }) {
-        super(opts)
+        let speed = opts && opts.speed || 0
 
-        this.sprite = kontra.sprite({
-            x: Math.floor(kontra.canvas.width / 2) - 20,
-            y: Math.floor(kontra.canvas.height / 2) - 10,
-            color: '#00DD00',
-            width: 40,
-            height: 20,
-            dx: 0
-        })
+        super()
+
+        this._debug = false
+        this._speed = speed
+        this.sprite = null
+    }
+
+    get debug() {
+        return this._debug
+    }
+
+    get speed() {
+        return this._speed
+    }
+
+    set debug(v) {
+        this._debug = !!v
+    }
+
+    set speed(v) {
+        if (v < 0)
+            v = 0
+
+        if (v > 3)
+            v = 3
+
+        this._speed = v
     }
 
     tick() {

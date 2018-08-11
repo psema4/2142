@@ -42,12 +42,24 @@ class SpaceTime {
 
     set timeDirection(v) {
         this._timeDirection = v
-        stars.forEach((s) => { s.dx = s.speed * ( -1 * this._timeDirection * this._timeMultiplier) })
+        //stars.forEach((s) => { s.dx = s.speed * ( -1 * this._timeDirection * this._timeMultiplier) })
+        let items = [stars, npcs, powerups]
+        items.forEach((i) => {
+            i.forEach((s) => {
+                s.dx = s.speed * ( -1 * this._timeDirection * this._timeMultiplier)
+            })
+        })
     }
 
     set timeMultiplier(v) {
         this._timeMultiplier = v
-        stars.forEach((s) => { s.dx = s.speed * ( -1 * this._timeDirection * this._timeMultiplier) })
+        //stars.forEach((s) => { s.dx = s.speed * ( -1 * this._timeDirection * this._timeMultiplier) })
+        let items = [stars, npcs, powerups]
+        items.forEach((i) => {
+            i.forEach((s) => {
+                s.dx = s.speed * ( -1 * this._timeDirection * this._timeMultiplier)
+            })
+        })
     }
 
     tick() {
@@ -55,6 +67,13 @@ class SpaceTime {
             this._time += 1
             player.tick()
 
+            let items = [stars, npcs, powerups]
+            items.forEach((i) => {
+                i.forEach((s) => {
+                    if (s.tick)
+                        s.tick()
+                })
+            })
         } else {
             this._time -= 1
 
@@ -64,6 +83,17 @@ class SpaceTime {
 
             player.restoreFromTick(this._time)
             player.popTimeState()
+
+            let items = [stars, npcs, powerups]
+            items.forEach((i) => {
+                i.forEach((s) => {
+                    if (s.restoreFromTick)
+                        s.restoreFromTick()
+
+                    if (s.popTimeState)
+                        s.popTimeState()
+                })
+            })
         }
 
         if (this.debug)

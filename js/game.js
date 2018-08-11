@@ -8,6 +8,10 @@ let isDisplayInitialized = false
 let spaceTime = new SpaceTime({ timeMultiplier: 1 })
 let player = null
 let numStars = 50 + Math.floor(Math.random() * 50)
+let numNPCs = 10 + Math.floor(Math.random() * 10)
+let numPowerups = 5 + Math.floor(Math.random() * 5)
+let npcs = []
+let powerups = []
 let stars = []
 
 function initializeKontra() {
@@ -17,20 +21,21 @@ function initializeKontra() {
 
   player = createPlayer()
   createStars()
+  createNPCs()
+  createPowerups()
 
   kontra.keys.bind(['enter', 'space'], function() {
-    console.log('Flip & Burn!')
-    flipAndBurn()
+    rewindTo(spaceTime.time - 500)
   });
 
-    let isPressed = {
-      left: false,
-      right: false,
-      up: false,
-      down: false,
-      space: false,
-      enter: false,
-    }
+  let isPressed = {
+    left: false,
+    right: false,
+    up: false,
+    down: false,
+    space: false,
+    enter: false,
+  }
 
   let loop = kontra.gameLoop({
     update: function() {
@@ -80,22 +85,28 @@ function initializeKontra() {
 
       player.sprite.update()
       
-      stars.forEach((s) => {
-        s.update()
-        
-        if (s.x < -2048) {
-          s.x = 2048
-        }
+      let items = [stars, npcs, powerups]
+      items.forEach((i) => {
+        i.forEach((s) => {
+          s.update()
+          
+          if (s.x < -2048) {
+            s.x = 2048
+          }
 
-        if (s.x > 2048) {
-          s.x = -2048
-        }
+          if (s.x > 2048) {
+            s.x = -2048
+          }
+        })
       })
     },
 
     render: function() {
       player.sprite.render()
-      stars.forEach((s) => { s.render() })
+      let items = [stars, npcs, powerups]
+      items.forEach((i) => {
+        i.forEach((s) => { s.render() })
+      })
     }
   })
 
@@ -121,6 +132,48 @@ function createStars() {
         color: '#FFFFFF',
         width: starSize,
         height: starSize,
+        dx: /* TOFE.state === 'playing' && */ -1 * startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
+        speed: startSpeed
+      })
+    )
+  }
+}
+
+function createNPCs() {
+  for (let i =0; i < numNPCs; i++) {
+    let size = 10
+    let startX = Math.floor(Math.random() * 4096) - 2048
+    let startY = Math.floor(Math.random() * kontra.canvas.height)
+    let startSpeed = Math.floor(Math.random() * 2) + 1
+
+    npcs.push(
+      kontra.sprite({
+        x: startX,
+        y: startY,
+        color: '#FF0000',
+        width: size,
+        height: size,
+        dx: /* TOFE.state === 'playing' && */ -1 * startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
+        speed: startSpeed
+      })
+    )
+  }
+}
+
+function createPowerups() {
+  for (let i =0; i < numPowerups; i++) {
+    let size = 5
+    let startX = Math.floor(Math.random() * 4096) - 2048
+    let startY = Math.floor(Math.random() * kontra.canvas.height)
+    let startSpeed = Math.floor(Math.random() * 2) + 1
+
+    powerups.push(
+      kontra.sprite({
+        x: startX,
+        y: startY,
+        color: '#0000FF',
+        width: size,
+        height: size,
         dx: /* TOFE.state === 'playing' && */ -1 * startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
         speed: startSpeed
       })
@@ -183,7 +236,13 @@ function setTimeMultiplier(v, reverse = false) {
   this.timeDirection = reverse
 }
 
-function flipAndBurn() {
-  spaceTime.targetTime = spaceTime.time - 500;
+function rewindTo(t) {
+  if (spaceTime.timeDirection < 0 || !t || t >= spaceTime.time)
+    return
+
+  if (t < 0)
+    t = 0
+
+  spaceTime.targetTime = t;
   spaceTime.timeDirection = -1;
 }
