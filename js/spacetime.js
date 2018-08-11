@@ -51,7 +51,7 @@ class SpaceTime {
     }
 
     updateEntities() {
-        let items = [stars, npcs, powerups]
+        let items = [stars, npcs, powerups, planets]
         items.forEach((i) => {
             i.forEach((s) => {
                 s.dx = s.speed * ( -1 * this._timeDirection * this._timeMultiplier)
@@ -64,7 +64,7 @@ class SpaceTime {
             this._time += 1
             player.tick()
 
-            let items = [stars, npcs, powerups]
+            let items = [stars, npcs, powerups, planets]
             items.forEach((i) => {
                 i.forEach((s) => {
                     if (s.tick)
@@ -81,7 +81,7 @@ class SpaceTime {
             player.restoreFromTick(this._time)
             player.popTimeState()
 
-            let items = [stars, npcs, powerups]
+            let items = [stars, npcs, powerups, planets]
             items.forEach((i) => {
                 i.forEach((s) => {
                     if (s.restoreFromTick)

@@ -6,13 +6,18 @@ var TOFE = {
 
 let isDisplayInitialized = false
 let spaceTime = new SpaceTime({ timeMultiplier: 1 })
+
 let player = null
+
 let numStars = 50 + Math.floor(Math.random() * 50)
-let numNPCs = 10 + Math.floor(Math.random() * 10)
+let numNPCs = 0 + Math.floor(Math.random() * 10)
 let numPowerups = 5 + Math.floor(Math.random() * 5)
+let numPlanets = 6
+
 let npcs = []
 let powerups = []
 let stars = []
+let planets = []
 
 function initializeKontra() {
   setCanvasSize();
@@ -23,6 +28,7 @@ function initializeKontra() {
   createStars()
   createNPCs()
   createPowerups()
+  createPlanets()
 
   kontra.keys.bind(['enter', 'space'], function() {
     rewindTo(spaceTime.time - 500)
@@ -41,6 +47,7 @@ function initializeKontra() {
     update: function() {
       spaceTime.tick()
 
+      // KEYBOARD
       if (spaceTime.timeDirection > 0) {
         if (kontra.keys.pressed('left')) {
           if (!isPressed.left) {
@@ -83,13 +90,12 @@ function initializeKontra() {
         }
       }
 
+      // UPDATE SPRITES
       player.sprite.update()
       
-      let items = [stars, npcs, powerups]
-      items.forEach((i) => {
+      let items = [stars, npcs, powerups, planets]
+      items.forEach((i, idx) => {
         i.forEach((s) => {
-          s.update()
-          
           if (s.x < -2048) {
             s.x = 2048
           }
@@ -97,13 +103,20 @@ function initializeKontra() {
           if (s.x > 2048) {
             s.x = -2048
           }
+
+          s.update()
+
+          // COLLISIONS
+          if (s.onCollideWithPlayer)
+            if (s.collidesWith(player.sprite))
+              s.onCollideWithPlayer()
         })
       })
     },
 
     render: function() {
       player.sprite.render()
-      let items = [stars, npcs, powerups]
+      let items = [stars, npcs, powerups, planets]
       items.forEach((i) => {
         i.forEach((s) => { s.render() })
       })
@@ -154,7 +167,8 @@ function createNPCs() {
         width: size,
         height: size,
         dx: /* TOFE.state === 'playing' && */ -1 * startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
-        speed: startSpeed
+        speed: startSpeed,
+        onCollideWithPlayer: function() { console.log('collideWithPlayer') },
       })
     )
   }
@@ -175,7 +189,36 @@ function createPowerups() {
         width: size,
         height: size,
         dx: /* TOFE.state === 'playing' && */ -1 * startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
-        speed: startSpeed
+        speed: startSpeed,
+        onCollideWithPlayer: function() { console.log('collideWithPlayer') },
+      })
+    )
+  }
+}
+
+function createPlanets() {
+  for (let i = 0; i < numPlanets; i++) {
+    let radius = Math.floor(Math.random() * 40) + 10
+    let startX = i == 0 ? player.sprite.x : Math.floor(Math.random() * 4096) - 2048
+    let startY = i == 0 ? 0 : Math.floor(Math.random() * kontra.canvas.height)
+    let startSpeed = 1
+
+    planets.push(
+      new kontra.sprite({
+        x: startX,
+        y: startY,
+        color: randomRGB(),
+        dx: /* TOFE.state === 'playing' && */ -1 * startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
+        speed: startSpeed,
+        radius: radius,
+        onCollideWithPlayer: function() { console.log('Player hit planet!') },
+        render: function() {
+          this.context.fillStyle = this.color;
+
+          this.context.beginPath();
+          this.context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+          this.context.fill();
+        },
       })
     )
   }
@@ -245,4 +288,14 @@ function rewindTo(t) {
 
   spaceTime.targetTime = t;
   spaceTime.timeDirection = -1;
+}
+
+function randomRGB() {
+  let chars = "0123456789ABCDEF".split('')
+  let numbers = []
+
+  for (let i=0; i < 6; i++)
+    numbers.push(Math.floor(Math.random() * 16))
+
+  return "#" + numbers.join('')
 }
