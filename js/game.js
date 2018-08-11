@@ -5,7 +5,7 @@ var TOFE = {
 };
 
 let isDisplayInitialized = false
-let spaceTime = new SpaceTime({ timeMultiplier: 10 })
+let spaceTime = new SpaceTime({ timeMultiplier: 1 })
 let playerSprite = null
 let numStars = 50 + Math.floor(Math.random() * 50)
 let stars = []
@@ -18,8 +18,14 @@ function initializeKontra() {
   playerSprite = createPlayer()
   createStars()
 
+  kontra.keys.bind(['enter', 'space'], function() {
+    console.log('Flip & Burn!')
+    flipAndBurn()
+  });
+
   let loop = kontra.gameLoop({
     update: function() {
+      spaceTime.tick()
       playerSprite.update()
       
       stars.forEach((s) => {
@@ -70,7 +76,7 @@ function createStars() {
         color: '#FFFFFF',
         width: starSize,
         height: starSize,
-        dx: /* TOFE.state === 'playing' && */ startSpeed * spaceTime.timeMultiplier,
+        dx: /* TOFE.state === 'playing' && */ -1 * startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
         speed: startSpeed
       })
     )
@@ -128,28 +134,11 @@ function pause() {
 }
 
 function setTimeMultiplier(v, reverse = false) {
-  spaceTime.timeMultiplier = reverse ? -1*v : v
+  spaceTime.timeMultiplier = v;
+  this.timeDirection = reverse
 }
 
 function flipAndBurn() {
-  if (spaceTime.timeDirection == -1 && spaceTime.timeMultiplier > -10) {
-    spaceTime.timeMultiplier -= 1
-    setTimeout(flipAndBurn, 500)
-    return
-
-  } else if (spaceTime.timeDirection == 1 && spaceTime.timeMultiplier < 10) {
-    spaceTime.timeMultiplier += 1
-    setTimeout(flipAndBurn, 250)
-    return
- 
-  } else if (spaceTime.timeDirection == 1) {
-    spaceTime.timeDirection = -1
-    setTimeout(flipAndBurn, 250)
-    return
- 
-  } else if (spaceTime.timeDirection == -1) {
-    spaceTime.timeDirection = 1
-    setTimeout(flipAndBurn, 250)
-    return
-  }
+  spaceTime.targetTime = spaceTime.time - 500;
+  spaceTime.timeDirection = -1;
 }
