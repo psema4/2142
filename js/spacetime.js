@@ -42,18 +42,15 @@ class SpaceTime {
 
     set timeDirection(v) {
         this._timeDirection = v
-        //stars.forEach((s) => { s.dx = s.speed * ( -1 * this._timeDirection * this._timeMultiplier) })
-        let items = [stars, npcs, powerups]
-        items.forEach((i) => {
-            i.forEach((s) => {
-                s.dx = s.speed * ( -1 * this._timeDirection * this._timeMultiplier)
-            })
-        })
+        this.updateEntities()
     }
 
     set timeMultiplier(v) {
         this._timeMultiplier = v
-        //stars.forEach((s) => { s.dx = s.speed * ( -1 * this._timeDirection * this._timeMultiplier) })
+        this.updateEntities()
+    }
+
+    updateEntities() {
         let items = [stars, npcs, powerups]
         items.forEach((i) => {
             i.forEach((s) => {
