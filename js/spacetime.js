@@ -35,7 +35,8 @@ class SpaceTime {
     }
 
     set targetTime(t) {
-        this._targetTime = t;
+        this._targetTime = t
+
         if (this._targetTime < 0)
             this._targetTime = 0
     }

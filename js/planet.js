@@ -19,19 +19,19 @@ class Planet extends SpaceEntity {
             radius: opts.radius,
 
             render: function() {
-                this.context.fillStyle = this.color;
+                this.context.fillStyle = this.color
 
-                this.context.beginPath();
-                this.context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-                this.context.fill();
+                this.context.beginPath()
+                this.context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI)
+                this.context.fill()
             },
 
             collidesWith: function(object) {
-                let dx = this.x - object.x;
-                let dy = this.y - object.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
+                let dx = this.x - object.x
+                let dy = this.y - object.y
+                let distance = Math.sqrt(dx * dx + dy * dy)
 
-                return distance < this.radius + object.radius;
+                return distance < this.radius + object.radius
             },
         })
     }
@@ -57,7 +57,7 @@ class Planet extends SpaceEntity {
 
     onCollideWithPlayer() {
         if (this.sprite.name == 'Black Hole') {
-           player.hull = -1;
+           player.hull = -1
 
         } else {
             spaceTime.timeMultiplier = 0

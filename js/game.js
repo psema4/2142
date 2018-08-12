@@ -2,7 +2,9 @@
 
 var TOFE = {
   state: 'init'
-};
+}
+
+let loop = null
 
 let isDisplayInitialized = false
 let spaceTime = new SpaceTime({ timeMultiplier: 1 })
@@ -22,7 +24,7 @@ let planets = []
 let activePlanet = null
 
 function initializeKontra() {
-  setCanvasSize();
+  setCanvasSize()
 
   kontra.init(document.querySelector('canvas'))
 }
@@ -44,7 +46,7 @@ function initializeGame() {
     let planetNumber = (Math.floor(Math.random() * planets.length-1)) + 1
 
     if (planetNumber > 0 && !planets[planetNumber].artifact)
-      planets[planetNumber].artifact = artifacts.pop();
+      planets[planetNumber].artifact = artifacts.pop()
   }
 
   let isPressed = {
@@ -57,170 +59,176 @@ function initializeGame() {
   }
 
   // MAIN LOOP
-  let loop = kontra.gameLoop({
-    update: function() {
-      if (TOFE.state == 'win' || TOFE.state == 'loose') {
-        if (kontra.keys.pressed('enter')) {
-          initializeGame();
-        }
-      }
-
-      if (TOFE.state != 'playing')
-        return
-
-      if (player._artifacts.length == 3)
-        win()
-
-      if (player.hull <= 0 || player.air <= 0 || player.water <= 0 || player.food <= 0 || player.fuel <= 0)
-        loose()
-
-      if (spaceTime.timeMultiplier != 0)
-        spaceTime.tick()
-
-      // KEYBOARD
-      if (spaceTime.timeMultiplier == 0) {
-        // special keys for when time is stopped
-
-        // l: launch
-        if (kontra.keys.pressed('l')) {
-          spaceTime.timeMultiplier = 1
-          activePlanet = null;
-        }
-
-        // i: investigate
-        if (kontra.keys.pressed('i')) {
-          console.log('searching...')
-          var v = Math.floor(Math.random() * 100)
-
-          if (activePlanet.artifact && v >= 95) {
-
-            player.addArtifact(activePlanet.artifact)
-            activePlanet.artifact = null;
-            console.log('discovery! you found an artifact')
+  if (!loop) {
+    loop = kontra.gameLoop({
+      update: function() {
+        if (TOFE.state == 'win' || TOFE.state == 'loose') {
+          if (kontra.keys.pressed('enter')) {
+            initializeGame()
           }
         }
 
-      } else {
-        // normal keys when playing (and time moving forward)
-        if (spaceTime.timeDirection > 0) {
-          if (kontra.keys.pressed('left')) {
-            if (!isPressed.left) {
-              isPressed.left = true;
-              player.speed -= 1
-            }
+        if (TOFE.state != 'playing')
+          return
 
-          } else {
-            isPressed.left = false;
+        if (player._artifacts.length == 3)
+          win()
+
+        if (player.hull <= 0 || player.air <= 0 || player.water <= 0 || player.food <= 0 || player.fuel <= 0)
+          loose()
+
+        if (spaceTime.timeMultiplier != 0)
+          spaceTime.tick()
+
+        // KEYBOARD
+        if (spaceTime.timeMultiplier == 0) {
+          // special keys for when time is stopped
+
+          // l: launch
+          if (kontra.keys.pressed('l')) {
+            spaceTime.timeMultiplier = 1
+            activePlanet = null
           }
 
-          if (kontra.keys.pressed('right')) {
-            if (!isPressed.right) {
-              isPressed.right = true;
-              player.speed += 1
-            }
+          // i: investigate
+          if (kontra.keys.pressed('i')) {
+            console.log('searching...')
 
-          } else {
-            isPressed.right = false;
+            if (!activePlanet.artifact)
+              return
+
+            var v = Math.floor(Math.random() * 100)
+
+            if (activePlanet.artifact && v >= 95) {
+              player.addArtifact(activePlanet.artifact)
+              activePlanet.artifact = null
+              console.log('discovery! you found an artifact')
+              playerStats()
+            }
           }
 
-          if (kontra.keys.pressed('up')) {
-            if (!isPressed.up) {
-              isPressed.up = true;
-              player.sprite.dy -= 1;
+        } else {
+          // normal keys when playing (and time moving forward)
+          if (spaceTime.timeDirection > 0) {
+            if (kontra.keys.pressed('left')) {
+              if (!isPressed.left) {
+                isPressed.left = true
+                player.speed -= 1
+              }
+
+            } else {
+              isPressed.left = false
             }
 
-          } else {
-            isPressed.up = false;
-          }
+            if (kontra.keys.pressed('right')) {
+              if (!isPressed.right) {
+                isPressed.right = true
+                player.speed += 1
+              }
 
-          if (kontra.keys.pressed('down')) {
-            if (!isPressed.down) {
-              isPressed.down = true;
-              player.sprite.dy += 1;
+            } else {
+              isPressed.right = false
             }
 
-          } else {
-            isPressed.down = false;
-          }
+            if (kontra.keys.pressed('up')) {
+              if (!isPressed.up) {
+                isPressed.up = true
+                player.sprite.dy -= 1
+              }
 
-          if (kontra.keys.pressed('space')) {
-            if (player.hasArtifact('Time Controller'))
-              rewindTo(spaceTime.time - 500)
+            } else {
+              isPressed.up = false
+            }
+
+            if (kontra.keys.pressed('down')) {
+              if (!isPressed.down) {
+                isPressed.down = true
+                player.sprite.dy += 1
+              }
+
+            } else {
+              isPressed.down = false
+            }
+
+            if (kontra.keys.pressed('space')) {
+              if (player.hasArtifact('Time Controller'))
+                rewindTo(spaceTime.time - 500)
+            }
           }
         }
-      }
 
-      // UPDATE SPRITES
-      if (spaceTime.timeMultiplier != 0 && player && player.sprite) {
-        player.sprite.update()
-        
-        let items = [stars, npcs, powerups, planets]
-        items.forEach((i, idx) => {
-          i.forEach((s) => {
-            if (s.x && s.x < -2048) {
-              s.x = 2048
-            }
-
-            if (s.x && s.x > 2048) {
-              s.x = -2048
-            }
-
-            if (s.sprite && s.sprite.x < -2048) {
-              s.sprite.x = 2048
-            }
-
-            if (s.sprite && s.sprite.x > 2048) {
-              s.sprite.x = -2048
-            }
-
-            if (s.update) s.update()
-            if (s.sprite) s.sprite.update()
+        // UPDATE SPRITES
+        if (spaceTime.timeMultiplier != 0 && player && player.sprite) {
+          player.sprite.update()
           
-            // COLLISIONS
-            if (s.onCollideWithPlayer)
-              if (s.sprite.collidesWith(player.sprite))
-                s.onCollideWithPlayer()
+          let items = [stars, npcs, powerups, planets]
+          items.forEach((i, idx) => {
+            i.forEach((s) => {
+              if (s.x && s.x < -2048) {
+                s.x = 2048
+              }
 
-              if (s.sprite && s.sprite.collidesWith(player.sprite))
-                s.onCollideWithPlayer()
+              if (s.x && s.x > 2048) {
+                s.x = -2048
+              }
 
-            if (s.collidesWith && s.collidesWith(planets[0]))
-              s.destroy()
+              if (s.sprite && s.sprite.x < -2048) {
+                s.sprite.x = 2048
+              }
 
-            if (s.sprite && s.sprite.collidesWith(planets[0])) {
-              if (s.destroy) s.destroy()
-              if (s.sprite && s.sprite.destroy) s.sprite.destroy()
+              if (s.sprite && s.sprite.x > 2048) {
+                s.sprite.x = -2048
+              }
+
+              if (s.update) s.update()
+              if (s.sprite) s.sprite.update()
+            
+              // COLLISIONS
+              if (s.onCollideWithPlayer)
+                if (s.sprite.collidesWith(player.sprite))
+                  s.onCollideWithPlayer()
+
+                if (s.sprite && s.sprite.collidesWith(player.sprite))
+                  s.onCollideWithPlayer()
+
+              if (s.collidesWith && s.collidesWith(planets[0]))
+                s.destroy()
+
+              if (s.sprite && s.sprite.collidesWith(planets[0])) {
+                if (s.destroy) s.destroy()
+                if (s.sprite && s.sprite.destroy) s.sprite.destroy()
+              }
+            })
+          })
+        }
+      },
+
+      render: function() {
+        if (TOFE.state == 'win')
+          winScreen()
+
+        if (TOFE.state == 'loose')
+          looseScreen()
+
+        if (TOFE.state != 'playing')
+          return
+
+        player.sprite.render()
+        let items = [stars, npcs, powerups, planets]
+        items.forEach((i) => {
+          i.forEach((s) => {
+            if (s.isActive) {
+              if (s.render)
+                s.render()
+
+              if (s.sprite)
+                s.sprite.render()
             }
           })
         })
       }
-    },
-
-    render: function() {
-      if (TOFE.state == 'win')
-        winScreen()
-
-      if (TOFE.state == 'loose')
-        looseScreen()
-
-      if (TOFE.state != 'playing')
-        return
-
-      player.sprite.render()
-      let items = [stars, npcs, powerups, planets]
-      items.forEach((i) => {
-        i.forEach((s) => {
-          if (s.isActive) {
-            if (s.render)
-              s.render()
-
-            if (s.sprite)
-              s.sprite.render()
-          }
-        })
-      })
-    }
-  })
+    })
+  }
 
   TOFE.state = 'playing'
 
@@ -295,7 +303,7 @@ function createPlanets() {
 }
 
 // BROWSER EVENTS
-window.addEventListener('resize', setCanvasSize);
+window.addEventListener('resize', setCanvasSize)
 document.querySelector('.scr_start').addEventListener('click', focusCanvas)
 
 // UTILITY
@@ -358,13 +366,13 @@ function setCanvasSize() {
 function focusCanvas(evt) {
   let scrStart = document.querySelector('.scr_start')
   scrStart.removeEventListener('click', focusCanvas)
-  scrStart.style.display = 'none';
+  scrStart.style.display = 'none'
 
-  evt.preventDefault();
-  evt.stopPropagation();
+  evt.preventDefault()
+  evt.stopPropagation()
   
   evt.target.requestFullscreen()
-  document.querySelector('canvas').style.border = '0px solid #000';
+  document.querySelector('canvas').style.border = '0px solid #000'
 
   initializeKontra()
   initializeGame()
@@ -379,7 +387,7 @@ function pause() {
 }
 
 function setTimeMultiplier(v, reverse = false) {
-  spaceTime.timeMultiplier = v;
+  spaceTime.timeMultiplier = v
   this.timeDirection = reverse
 }
 
@@ -390,8 +398,8 @@ function rewindTo(t) {
   if (t < 0)
     t = 0
 
-  spaceTime.targetTime = t;
-  spaceTime.timeDirection = -1;
+  spaceTime.targetTime = t
+  spaceTime.timeDirection = -1
 }
 
 function randomRGB() {

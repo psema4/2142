@@ -140,6 +140,6 @@ class Player extends SpaceEntity {
     }
 
     hasArtifact(v) {
-        return this._artifacts.includes(v);
+        return this._artifacts.includes(v)
     }
 }

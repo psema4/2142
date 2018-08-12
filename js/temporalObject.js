@@ -4,15 +4,15 @@ class TemporalObject {
     }
 
     get timeStates() {
-        return this._timeStates;
+        return this._timeStates
     }
 
     tick() {
-        console.warn('TemporalObject: stub: virtual tick()');
+        console.warn('TemporalObject: stub: virtual tick()')
     }
 
     restoreFromTick(t) {
-        console.warn('TemporalObject: stub: virtual restoreFromTick()');
+        console.warn('TemporalObject: stub: virtual restoreFromTick()')
     }
 
     popTimeState() {
