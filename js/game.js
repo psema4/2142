@@ -43,6 +43,7 @@ function initializeKontra() {
     enter: false,
   }
 
+  // MAIN LOOP
   let loop = kontra.gameLoop({
     update: function() {
       spaceTime.tick()
@@ -96,20 +97,40 @@ function initializeKontra() {
       let items = [stars, npcs, powerups, planets]
       items.forEach((i, idx) => {
         i.forEach((s) => {
-          if (s.x < -2048) {
+          if (s.x && s.x < -2048) {
             s.x = 2048
           }
 
-          if (s.x > 2048) {
+          if (s.x && s.x > 2048) {
             s.x = -2048
           }
 
-          s.update()
+          if (s.sprite && s.sprite.x < -2048) {
+            s.sprite.x = 2048
+          }
+
+          if (s.sprite && s.sprite.x > 2048) {
+            s.sprite.x = -2048
+          }
+
+          if (s.update) s.update()
+          if (s.sprite) s.sprite.update()
 
           // COLLISIONS
           if (s.onCollideWithPlayer)
-            if (s.collidesWith(player.sprite))
+            if (s.sprite.collidesWith(player.sprite))
               s.onCollideWithPlayer()
+
+            if (s.sprite && s.sprite.collidesWith(player.sprite))
+              s.onCollideWithPlayer()
+
+          if (s.collidesWith && s.collidesWith(planets[0]))
+            s.destroy()
+
+          if (s.sprite && s.sprite.collidesWith(planets[0])) {
+            if (s.destroy) s.destroy()
+            if (s.sprite && s.sprite.destroy) s.sprite.destroy()
+          }
         })
       })
     },
@@ -118,7 +139,10 @@ function initializeKontra() {
       player.sprite.render()
       let items = [stars, npcs, powerups, planets]
       items.forEach((i) => {
-        i.forEach((s) => { s.render() })
+        i.forEach((s) => {
+          if (s.render) s.render()
+          if (s.sprite) s.sprite.render()
+        })
       })
     }
   })
@@ -127,12 +151,13 @@ function initializeKontra() {
   loop.start()
 }
 
+// CREATE ALL THE THINGS
 function createPlayer() {
   return new Player()
 }
 
 function createStars() {
-  for (let i =0; i < numStars; i++) {
+  for (let i = 0; i < numStars; i++) {
     let starSize = Math.floor(Math.random() * 2) + 1
     let startX = Math.floor(Math.random() * 4096) - 2048
     let startY = Math.floor(Math.random() * kontra.canvas.height)
@@ -153,80 +178,45 @@ function createStars() {
 }
 
 function createNPCs() {
-  for (let i =0; i < numNPCs; i++) {
+  for (let i = 0; i < numNPCs; i++) {
     let size = 10
     let startX = Math.floor(Math.random() * 4096) - 2048
     let startY = Math.floor(Math.random() * kontra.canvas.height)
     let startSpeed = Math.floor(Math.random() * 2) + 1
 
-    npcs.push(
-      kontra.sprite({
-        x: startX,
-        y: startY,
-        color: '#FF0000',
-        width: size,
-        height: size,
-        dx: /* TOFE.state === 'playing' && */ -1 * startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
-        speed: startSpeed,
-        onCollideWithPlayer: function() { console.log('collideWithPlayer') },
-      })
-    )
+    npcs.push(new NPC({ startX, startY, size, startSpeed, color: '#FF0000' }))
   }
 }
 
 function createPowerups() {
-  for (let i =0; i < numPowerups; i++) {
+  for (let i = 0; i < numPowerups; i++) {
     let size = 5
     let startX = Math.floor(Math.random() * 4096) - 2048
     let startY = Math.floor(Math.random() * kontra.canvas.height)
     let startSpeed = Math.floor(Math.random() * 2) + 1
 
-    powerups.push(
-      kontra.sprite({
-        x: startX,
-        y: startY,
-        color: '#0000FF',
-        width: size,
-        height: size,
-        dx: /* TOFE.state === 'playing' && */ -1 * startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
-        speed: startSpeed,
-        onCollideWithPlayer: function() { console.log('collideWithPlayer') },
-      })
-    )
+    powerups.push(new Powerup({ size, startX, startY, startSpeed, color: '#0000FF' }))
   }
 }
 
 function createPlanets() {
   for (let i = 0; i < numPlanets; i++) {
-    let radius = Math.floor(Math.random() * 40) + 10
+    let radius = i == 0 ? 1000 : Math.floor(Math.random() * 40) + 10
     let startX = i == 0 ? player.sprite.x : Math.floor(Math.random() * 4096) - 2048
-    let startY = i == 0 ? 0 : Math.floor(Math.random() * kontra.canvas.height)
-    let startSpeed = 1
+    let startY = i == 0 ? -950 : Math.floor(Math.random() * kontra.canvas.height)
+    let startSpeed = i == 0 ? 0 : 1
+    let type = i == 0 ? 'Black Hole': 'Planet ' + i
+    let color = i == 0 ? '#FFFFFF' : randomRGB()
 
-    planets.push(
-      new kontra.sprite({
-        x: startX,
-        y: startY,
-        color: randomRGB(),
-        dx: /* TOFE.state === 'playing' && */ -1 * startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
-        speed: startSpeed,
-        radius: radius,
-        onCollideWithPlayer: function() { console.log('Player hit planet!') },
-        render: function() {
-          this.context.fillStyle = this.color;
-
-          this.context.beginPath();
-          this.context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-          this.context.fill();
-        },
-      })
-    )
+    planets.push(new Planet({ radius, startX, startY, startSpeed, type, color }))
   }
 }
 
+// BROWSER EVENTS
 window.addEventListener('resize', setCanvasSize);
 document.querySelector('.scr_start').addEventListener('click', focusCanvas)
 
+// UTILITY
 function splashScreen() {
   setCanvasSize()
   let canvas = document.querySelector('canvas')

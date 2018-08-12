@@ -67,10 +67,17 @@ class SpaceTime {
             let items = [stars, npcs, powerups, planets]
             items.forEach((i) => {
                 i.forEach((s) => {
-                    if (s.tick)
+                    if (s.tick) // Temporal Object
                         s.tick()
+
+                    if (s.onTick)
+                        s.onTick() // Space Entity
+
+                    if (s.sprite && s.sprite.onTick)
+                        s.sprite.onTick()
                 })
             })
+
         } else {
             this._time -= 1
 
@@ -85,7 +92,7 @@ class SpaceTime {
             items.forEach((i) => {
                 i.forEach((s) => {
                     if (s.restoreFromTick)
-                        s.restoreFromTick()
+                        s.restoreFromTick(this._time)
 
                     if (s.popTimeState)
                         s.popTimeState()
