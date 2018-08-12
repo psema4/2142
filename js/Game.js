@@ -141,10 +141,10 @@ function initializeGame() {
         if (TOFE.state != 'playing')
           return
 
-        if (player._artifacts.length == 3)
+        if (player && player._artifacts.length == 3)
           win()
 
-        if (player.hull <= 0 || player.air <= 0 || player.water <= 0 || player.food <= 0 || player.fuel <= 0)
+        if (player && player.hull <= 0 || player.air <= 0 || player.water <= 0 || player.food <= 0 || player.fuel <= 0)
           loose()
 
         if (spaceTime.timeMultiplier != 0)
@@ -175,8 +175,13 @@ function initializeGame() {
             var v = Math.floor(Math.random() * 100)
 
             if (activePlanet.artifact && v >= 95) {
+              if (activePlanet.artifact == 'Time Controller')
+                player.timeJuice = 100
+
               player.addArtifact(activePlanet.artifact)
+
               activePlanet.artifact = null
+
               console.log('discovery! you found an artifact')
               playerStats()
             }
@@ -324,6 +329,8 @@ function initializeGame() {
             }
           })
         })
+
+        guiHud()
       }
     })
   }
@@ -405,6 +412,41 @@ window.addEventListener('resize', setCanvasSize)
 document.querySelector('.scr_start').addEventListener('click', focusCanvas)
 
 // UTILITY
+function guiHud() {
+  let context = kontra.canvas.getContext('2d')
+
+  if (context) {
+    context.fillStyle = TOFE.theme[TOFE.selectedTheme].textColor
+    context.font = TOFE.theme[TOFE.selectedTheme].font
+
+    let currentX = 60
+    let currentY = 60
+
+    context.fillText(`HULL: ${player.hull.toFixed(2)}`, currentX, currentY)
+    currentX += 180
+
+    context.fillText(`AIR: ${player.air.toFixed(2)}`, currentX, currentY)
+    currentX = 60
+    currentY += 30
+
+    context.fillText(`FUEL: ${player.fuel.toFixed(2)}`, currentX, currentY)
+    currentX += 180
+
+    context.fillText(`WATER: ${player.water.toFixed(2)}`, currentX, currentY)
+    currentX = 60
+    currentY += 30
+
+    context.fillText(`FOOD: ${player.food.toFixed(2)}`, currentX, currentY)
+    currentX += 180
+
+    if (player.hasArtifact('Time Controller')) {
+      context.fillText(`TIME JUICE: ${player.timeJuice.toFixed(2)}`, currentX, currentY)
+      currentX = 60
+      currentY += 30
+    }
+  }
+}
+
 function splashScreen() {
   setCanvasSize()
 
@@ -651,7 +693,7 @@ function setTimeMultiplier(v, reverse = false) {
 }
 
 function rewindTo(t) {
-  if (spaceTime.timeDirection < 0 || !t || t >= spaceTime.time)
+  if (spaceTime.timeDirection < 0 || !t || t >= spaceTime.time && player.timeJuice <= 0)
     return
 
   if (t < 0)

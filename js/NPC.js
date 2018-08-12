@@ -22,7 +22,7 @@ class NPC extends SpaceEntity {
     onCollideWithPlayer() {
         if (this.isActive) {
             console.log('a ship collided with player!')
-            this.destroy()
+            player.hull -= 1
         }
     }
 

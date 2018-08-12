@@ -88,25 +88,32 @@ class SpaceTime {
             })
 
         } else {
-            this._time -= 1
+            if (player && player.timeJuice > 0) {
+                this._time -= 1
+                player.timeJuice -= 1
 
-            if (this._time <= this.targetTime) {
+                if (this._time <= this.targetTime) {
+                    this.timeDirection = 1
+                }
+
+                player.restoreFromTick(this._time)
+                player.popTimeState()
+
+                let items = [stars, npcs, powerups, planets]
+                items.forEach((i) => {
+                    i.forEach((s) => {
+                        if (s.restoreFromTick)
+                            s.restoreFromTick(this._time)
+
+                        if (s.popTimeState)
+                            s.popTimeState()
+                    })
+                })
+
+            } else {
+                console.log('no juice!')
                 this.timeDirection = 1
             }
-
-            player.restoreFromTick(this._time)
-            player.popTimeState()
-
-            let items = [stars, npcs, powerups, planets]
-            items.forEach((i) => {
-                i.forEach((s) => {
-                    if (s.restoreFromTick)
-                        s.restoreFromTick(this._time)
-
-                    if (s.popTimeState)
-                        s.popTimeState()
-                })
-            })
         }
 
         if (this.debug)

@@ -9,6 +9,7 @@ class Player extends SpaceEntity {
         this._water = 100
         this._food = 100
         this._fuel = 100
+        this._timeJuice = 0
 
         this.sprite = kontra.sprite({
             x: Math.floor(kontra.canvas.width / 2) - 20,
@@ -39,6 +40,10 @@ class Player extends SpaceEntity {
 
     get fuel() {
         return this._fuel
+    }
+
+    get timeJuice() {
+        return this._timeJuice
     }
 
     set hull(v) {
@@ -91,6 +96,13 @@ class Player extends SpaceEntity {
         this._fuel = v        
     }
 
+    set timeJuice(v) {
+        if (v < 0)
+            v = 0
+
+        this._timeJuice = v
+    }
+
     tick() {
         if (TOFE.state != 'playing')
             return
@@ -99,6 +111,7 @@ class Player extends SpaceEntity {
         this.food += TOFE.difficulty[TOFE.selectedDifficulty].resources.food
         this.water += TOFE.difficulty[TOFE.selectedDifficulty].resources.water
         this.fuel += TOFE.difficulty[TOFE.selectedDifficulty].resources.fuel
+        this.timeJuice += TOFE.difficulty[TOFE.selectedDifficulty].resources.timeJuice
 
         this._timeStates.push({
             x: this.sprite.x,
@@ -111,6 +124,7 @@ class Player extends SpaceEntity {
             food: this.food,
             water: this.water,
             fuel: this.fuel,
+            timeJuice: this.timeJuice,
         })
 
         if (this.debug)
@@ -132,6 +146,7 @@ class Player extends SpaceEntity {
             this.water = this._timeStates[t].water
             this.food = this._timeStates[t].food
             this.fuel = this._timeStates[t].fuel
+            this.timeJuice = this._timeStates[t].timeJuice
         }
     }
 
