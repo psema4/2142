@@ -95,10 +95,10 @@ class Player extends SpaceEntity {
         if (TOFE.state != 'playing')
             return
 
-        this.air -= 0.001
-        this.food -= 0.00025
-        this.water -= 0.0005
-        this.fuel -= 0.0015
+        this.air += TOFE.difficulty[TOFE.selectedDifficulty].resources.air
+        this.food += TOFE.difficulty[TOFE.selectedDifficulty].resources.food
+        this.water += TOFE.difficulty[TOFE.selectedDifficulty].resources.water
+        this.fuel += TOFE.difficulty[TOFE.selectedDifficulty].resources.fuel
 
         this._timeStates.push({
             x: this.sprite.x,

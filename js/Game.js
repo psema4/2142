@@ -1,10 +1,43 @@
 // game.js
 
 var TOFE = {
-  state: 'init'
+  state: 'init',
+  debug: false,
+  waitDelay: 10,
+  selectedDifficulty: 'easy',
+  difficulty: {
+    easy: {
+      resources: {
+        air:       -0.001,
+        food:      -0.00025,
+        water:     -0.0005,
+        fuel:      -0.0015,
+        timeJuice: 0,
+      },
+    },
+    medium: {
+      resources: {
+        air:       -0.001,
+        food:      -0.00025,
+        water:     -0.0005,
+        fuel:      -0.0015,
+        timeJuice: 0,
+      },
+    },
+    hard: {
+      resources: {
+        air:       -0.001,
+        food:      -0.00025,
+        water:     -0.0005,
+        fuel:      -0.0015,
+        timeJuice: 0,
+      },
+    }
+  }
 }
 
 let loop = null
+let cooldown = 0
 
 let isDisplayInitialized = false
 let spaceTime = new SpaceTime({ timeMultiplier: 1 })
@@ -30,8 +63,7 @@ function initializeKontra() {
 }
 
 function initializeGame() {
-  let artifacts = [ 'Time Controller', 'Space Controller', 'Mind Controller' ]
-
+  cooldown = 0
   npcs = []
   powerups = []
   stars = []
@@ -41,6 +73,8 @@ function initializeGame() {
   createNPCs()
   createPowerups()
   createPlanets()
+
+  let artifacts = [ 'Time Controller', 'Space Controller', 'Mind Controller' ]
 
   while (artifacts.length) {
     let planetNumber = (Math.floor(Math.random() * planets.length-1)) + 1
@@ -72,8 +106,9 @@ function initializeGame() {
 
         } else if (TOFE.state != 'playing') {
           // FIXME: debounce
-          if (!isPressed.enter && kontra.keys.pressed('enter')) {
+          if (!isPressed.enter && cooldown == 0 && kontra.keys.pressed('enter')) {
             isPressed.enter = true
+            cooldown = TOFE.waitDelay
 
             if (TOFE.state == 'firstLoad')
               TOFE.state = 'story1'
@@ -86,6 +121,9 @@ function initializeGame() {
 
           } else {
             isPressed.enter = false
+
+            if (cooldown > 0)
+              cooldown -= 1
           }
         }
 
@@ -388,8 +426,15 @@ function firstLoadScreen() {
     let cy = (Math.floor(canvas.height) / 2) - 60
 
     ctx.fillText('First Load', cx + 50, cy)
-    ctx.fillText('<Enter>', cx, cy + 60)
-    ctx.fillText('Continue', cx + 100, cy + 60)
+
+    if (cooldown == 0) {
+      ctx.fillText('<Enter>', cx, cy + 60)
+      ctx.fillText('Continue', cx + 100, cy + 60)
+
+    } else {
+      if (TOFE.debug)
+        ctx.fillText('Please wait...', cx, cy + 60)
+    }
   }
 }
 
@@ -405,8 +450,15 @@ function storyScreen(storyNumber) {
     let cy = (Math.floor(canvas.height) / 2) - 60
 
     ctx.fillText('Story', cx + 50, cy)
-    ctx.fillText('<Enter>', cx, cy + 60)
-    ctx.fillText('Continue', cx + 100, cy + 60)
+
+    if (cooldown == 0) {
+      ctx.fillText('<Enter>', cx, cy + 60)
+      ctx.fillText('Continue', cx + 100, cy + 60)
+
+    } else {
+      if (TOFE.debug)
+        ctx.fillText('Please wait...', cx, cy + 60)
+    }
   }
 }
 
@@ -422,8 +474,15 @@ function instructionsScreen() {
     let cy = (Math.floor(canvas.height) / 2) - 60
 
     ctx.fillText('Instructions', cx + 50, cy)
-    ctx.fillText('<Enter>', cx, cy + 60)
-    ctx.fillText('Play', cx + 100, cy + 60)
+
+    if (cooldown == 0) {
+      ctx.fillText('<Enter>', cx, cy + 60)
+      ctx.fillText('Play', cx + 100, cy + 60)
+
+    } else {
+      if (TOFE.debug)
+        ctx.fillText('Please wait...', cx, cy + 60)
+    }
   }
 }
 
@@ -439,8 +498,15 @@ function menuScreen() {
     let cy = (Math.floor(canvas.height) / 2) - 60
 
     ctx.fillText('Menu', cx + 50, cy)
-    ctx.fillText('<Enter>', cx, cy + 60)
-    ctx.fillText('Play', cx + 100, cy + 60)
+
+    if (cooldown == 0) {
+      ctx.fillText('<Enter>', cx, cy + 60)
+      ctx.fillText('Play', cx + 100, cy + 60)
+
+    } else {
+      if (TOFE.debug)
+        ctx.fillText('Please wait...', cx, cy + 60)
+    }
   }
 }
 
