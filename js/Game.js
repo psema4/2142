@@ -136,6 +136,31 @@ function initializeGame() {
             if (cooldown > 0)
               cooldown -= 1
           }
+
+          if (TOFE.state == 'menu') {
+            if (kontra.keys.pressed('1')) {
+              TOFE.selectedDifficulty = 'easy'
+              TOFE.state = 'playing'
+            }
+
+            if (kontra.keys.pressed('2')) {
+              TOFE.selectedDifficulty = 'medium'
+              TOFE.state = 'playing'
+            }
+
+            if (kontra.keys.pressed('3')) {
+              TOFE.selectedDifficulty = 'hard'
+              TOFE.state = 'playing'
+            }
+
+            if (kontra.keys.pressed('q')) {
+              initializeGame()
+            }
+
+            if (kontra.keys.pressed('i')) {
+              instructions()
+            }
+          }
         }
 
         if (TOFE.state != 'playing')
@@ -457,10 +482,11 @@ function splashScreen() {
     ctx.fillStyle = TOFE.theme[TOFE.selectedTheme].textColor
     ctx.font = TOFE.theme[TOFE.selectedTheme].font
 
-    let cx = (Math.floor(canvas.width) / 2) - 60
-    let cy = (Math.floor(canvas.height) / 2) - 60
+    let cx = (Math.floor(canvas.width) / 2)
+    let cy = (Math.floor(canvas.height) / 2) - 220
 
-    ctx.fillText('Click to Start!', cx + 50, cy)
+    ctx.textAlign = 'center'
+    ctx.fillText('Click to Start!', cx, cy)
   }
 }
 
@@ -482,18 +508,21 @@ function firstLoadScreen() {
     let currentX = cx + offsetX
     let currentY = cy + offsetY
     let indentX = currentX + 30
+    let leftColumn = cx - 100
+    let rightColumn = cx + 100
 
-    ctx.fillText('First Load', cx - 65, currentY)
-    currentY += 60
+    ctx.textAlign = 'center'
+    //ctx.fillText('First Load', cx, currentY)
+    currentY = 700
 
     if (cooldown == 0) {
-      ctx.fillText('<Enter>', currentX, currentY)
-      ctx.fillText('Continue', currentX + 100, currentY)
+      ctx.fillText('<ENTER>', leftColumn, currentY)
+      ctx.fillText('Continue', rightColumn, currentY)
       currentY += 30
 
     } else {
       if (TOFE.debug)
-        ctx.fillText('Please wait...', currentX, currentY)
+        ctx.fillText('Please wait...', cx, currentY)
     }
   }
 }
@@ -513,18 +542,21 @@ function storyScreen(storyNumber) {
     let currentX = cx + offsetX
     let currentY = cy + offsetY
     let indentX = currentX + 30
+    let leftColumn = cx - 100
+    let rightColumn = cx + 100
 
-    ctx.fillText('Story', cx - 45, currentY)
-    currentY += 60
+    ctx.textAlign = 'center'
+    //ctx.fillText('Story', cx, currentY)
+    currentY = 700
 
     if (cooldown == 0) {
-      ctx.fillText('<Enter>', currentX, currentY)
-      ctx.fillText('Continue', currentX + 100, currentY)
+      ctx.fillText('<ENTER>', leftColumn, currentY)
+      ctx.fillText('Play', rightColumn, currentY)
       currentY += 30
 
     } else {
       if (TOFE.debug)
-        ctx.fillText('Please wait...', currentX, currentY)
+        ctx.fillText('Please wait...', cx, currentY)
     }
   }
 }
@@ -544,50 +576,75 @@ function instructionsScreen() {
     let currentX = cx + offsetX
     let currentY = cy + offsetY
     let indentX = currentX + 30
+    let leftColumn = cx - 100
+    let rightColumn = cx + 50
 
-    ctx.fillText('Instructions', cx - 65, currentY)
+    ctx.textAlign = 'center'
+    ctx.fillText('Instructions', cx, currentY)
     currentY += 60
 
     if (cooldown == 0) {
-      ctx.fillText('Objective:', currentX, currentY)
+      ctx.fillText("Don't die. Seriously, don't run out of air. Or water.", cx, currentY)
+      currentY += 30
+
+      ctx.fillText("Or food. Or fuel! Also, don't blow up!", cx, currentY)
+      currentY += 30
+
+      ctx.fillText("And stay away from that Black Hole. Find a way out of this mess.", cx, currentY)
       currentY += 60
 
-      ctx.fillText("Don't die. Seriously, don't run out of air. Or water.", indentX, currentY)
+      ctx.textAlign = 'center'
+      ctx.fillText('<ENTER>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Play / Continue', rightColumn, currentY)
       currentY += 30
 
-      ctx.fillText("Or food. Or fuel! Also, don't blow up!", indentX, currentY)
+      ctx.textAlign = 'center'
+      ctx.fillText('<UP>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Move up', rightColumn, currentY)
       currentY += 30
 
-      ctx.fillText("And stay away from that Black Hole. Find a way out of this mess.", indentX, currentY)
-      currentY += 60
-
-
-      ctx.fillText('Keys:', currentX, currentY)
-      currentY += 60
-
-      ctx.fillText('<Enter>', indentX, currentY)
-      ctx.fillText('Play / Continue', indentX + 100, currentY)
+      ctx.textAlign = 'center'
+      ctx.fillText('<DOWN>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Move down', rightColumn, currentY)
       currentY += 30
 
-      ctx.fillText('<Space>', indentX, currentY)
-      ctx.fillText('Use Artifact', indentX + 100, currentY)
+      ctx.textAlign = 'center'
+      ctx.fillText('<I>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Investigate (Away team)', rightColumn, currentY)
       currentY += 30
 
-      ctx.fillText('<Up>', indentX, currentY)
-      ctx.fillText('Move up', indentX + 100, currentY)
+      ctx.textAlign = 'center'
+      ctx.fillText('<L>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Leave Planet (Away team)', rightColumn, currentY)
       currentY += 30
 
-      ctx.fillText('<Down>', indentX, currentY)
-      ctx.fillText('Move down', indentX + 100, currentY)
+      ctx.textAlign = 'center'
+      ctx.fillText('<P>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Pause', rightColumn, currentY)
       currentY += 30
 
-      ctx.fillText('<P>', indentX, currentY)
-      ctx.fillText('Pause', indentX + 100, currentY)
+      ctx.textAlign = 'center'
+      ctx.fillText('<SPACE>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Use Artifact', rightColumn, currentY)
+      currentY += 30
+
+      currentY = 700
+      ctx.textAlign = 'center'
+      ctx.fillText('<ENTER>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Continue', rightColumn, currentY)
       currentY += 30
 
     } else {
       if (TOFE.debug)
-        ctx.fillText('Please wait...', currentX, currentY)
+        ctx.fillText('Please wait...', cx, currentY)
     }
   }
 }
@@ -607,18 +664,53 @@ function menuScreen() {
     let currentX = cx + offsetX
     let currentY = cy + offsetY
     let indentX = currentX + 30
+    let leftColumn = cx - 80
+    let rightColumn = cx + 50
 
-    ctx.fillText('Menu', cx - 65, currentY)
+    ctx.textAlign = 'center'
+    ctx.fillText('Menu', cx, currentY)
     currentY += 60
 
     if (cooldown == 0) {
-      ctx.fillText('<Enter>', currentX, currentY)
-      ctx.fillText('Play', currentX + 100, currentY)
+      ctx.textAlign = 'center'
+      ctx.fillText('<I>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Instructions', rightColumn, currentY)
+      currentY += 30
+      
+      ctx.textAlign = 'center'
+      ctx.fillText('<Q>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Quit Game', rightColumn, currentY)
+      currentY += 30
+      
+      ctx.textAlign = 'center'
+      ctx.fillText('<1>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Difficulty: Easy', rightColumn, currentY)
+      currentY += 30
+
+      ctx.textAlign = 'center'
+      ctx.fillText('<2>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Difficulty: Medium', rightColumn, currentY)
+      currentY += 30
+
+      ctx.textAlign = 'center'
+      ctx.fillText('<3>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Difficulty: Hard', rightColumn, currentY)
+      currentY += 30
+
+      ctx.textAlign = 'center'
+      ctx.fillText('<ENTER>', leftColumn, currentY)
+      ctx.textAlign = 'left'
+      ctx.fillText('Play', rightColumn, currentY)
       currentY += 30
 
     } else {
       if (TOFE.debug)
-        ctx.fillText('Please wait...', currentX, currentY)
+        ctx.fillText('Please wait...', cx, currentY)
     }
   }
 }
@@ -631,12 +723,15 @@ function winScreen() {
     ctx.fillStyle = TOFE.theme[TOFE.selectedTheme].textColor
     ctx.font = TOFE.theme[TOFE.selectedTheme].font
 
-    let cx = (Math.floor(canvas.width) / 2) - 40
-    let cy = (Math.floor(canvas.height) / 2) - 60
+    let cx = (Math.floor(canvas.width) / 2)
+    let cy = (Math.floor(canvas.height) / 2) - 200
+    let leftColumn = cx - 100
+    let rightColumn = cx + 100
 
-    ctx.fillText('You Win!', cx + 50, cy)
-    ctx.fillText('<Enter>', cx, cy + 60)
-    ctx.fillText('Play Again', cx + 100, cy + 60)
+    ctx.textAlign = 'center'
+    ctx.fillText('You Win!', cx, cy)
+    ctx.fillText('<ENTER>', leftColumn, cy + 60)
+    ctx.fillText('Play Again', rightColumn, cy + 60)
   }
 }
 
@@ -648,19 +743,22 @@ function looseScreen() {
     ctx.fillStyle = TOFE.theme[TOFE.selectedTheme].textColor
     ctx.font = TOFE.theme[TOFE.selectedTheme].font
 
-    let cx = (Math.floor(canvas.width) / 2) - 40
-    let cy = (Math.floor(canvas.height) / 2) - 60
+    let cx = (Math.floor(canvas.width) / 2)
+    let cy = (Math.floor(canvas.height) / 2) - 200
+    let leftColumn = cx - 100
+    let rightColumn = cx + 100
 
-    ctx.fillText('You Loose!', cx + 50, cy)
-    ctx.fillText('<Enter>', cx, cy + 60)
-    ctx.fillText('Play Again', cx + 100, cy + 60)
+    ctx.textAlign = 'center'
+    ctx.fillText('You Loose!', cx, cy)
+    ctx.fillText('<ENTER>', leftColumn, cy + 60)
+    ctx.fillText('Play Again', rightColumn, cy + 60)
   }
 }
 
 function setCanvasSize() {
   let canvas = document.querySelector('canvas')
-  canvas.width = screen.availWidth
-  canvas.height = screen.availHeight
+  canvas.height = isDisplayInitialized ? screen.availHeight : screen.availHeight - 5 * (screen.height - screen.availHeight - 1)
+  canvas.width = isDisplayInitialized ? screen.availWidth : screen.availWidth - 10
   isDisplayInitialized = true
 }
 
