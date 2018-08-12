@@ -24,6 +24,11 @@ class Planet extends SpaceEntity {
                 this.context.beginPath()
                 this.context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI)
                 this.context.fill()
+
+                this.context.font = TOFE.theme[TOFE.selectedTheme].fontSmall
+                this.context.fillStyle = TOFE.theme[TOFE.selectedTheme].smallTextColor
+                this.context.textAlign = 'center'
+                this.context.fillText(`${this.name}`, this.x, this.y + this.radius + 20)
             },
 
             collidesWith: function(object) {
@@ -60,9 +65,11 @@ class Planet extends SpaceEntity {
            player.hull = -1
 
         } else {
-            spaceTime.timeMultiplier = 0
-            activePlanet = this
-            console.log(`arrived at ${this.sprite.name}`)
+            if (cooldown == 0) {
+                spaceTime.timeMultiplier = 0
+                activePlanet = this
+                console.log(`arrived at ${this.sprite.name}`)
+            }
         }
     }
 

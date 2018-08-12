@@ -7,6 +7,9 @@ class NPC extends SpaceEntity {
 
         super(opts)
 
+        let prefix = 'ESF-'
+        let id = Math.floor(Math.random() * 8999) + 1000
+
         this.sprite = kontra.sprite({
             x: opts.startX,
             y: opts.startY,
@@ -16,6 +19,18 @@ class NPC extends SpaceEntity {
             dx: /* TOFE.state === 'playing' && */ -1 * opts.startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
             radius: opts.radius || 2,
             speed: opts.startSpeed,
+            name: prefix + id,
+
+            render: function() {
+                this.context.fillStyle = this.color
+
+                this.context.fillRect(this.x - Math.floor(this.width/2), this.y - Math.floor(this.height/2), this.width, this.height)
+
+                this.context.font = TOFE.theme[TOFE.selectedTheme].fontSmall
+                this.context.fillStyle = TOFE.theme[TOFE.selectedTheme].smallTextColor
+                this.context.textAlign = 'center'
+                this.context.fillText(`${this.name}`, this.x, this.y + this.radius + 20)
+            },
         })
     }
 

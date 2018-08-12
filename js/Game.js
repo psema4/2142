@@ -9,10 +9,14 @@ var TOFE = {
     default: {
       textColor: '#FF0000',
       font: '24px lucida console',
+      smallTextColor: '#FFFFFF',
+      fontSmall: '12px lucida console',
     },
     highContrast: {
       textColor: '#FFFFFF',
       font: '24px lucida console',
+      smallTextColor: '#FFFFFF',
+      fontSmall: '12px lucida console',
     }
   },
   selectedDifficulty: 'easy',
@@ -172,16 +176,17 @@ function initializeGame() {
         if (player && player.hull <= 0 || player.air <= 0 || player.water <= 0 || player.food <= 0 || player.fuel <= 0)
           loose()
 
-        // 3% CHANCE ADD NPC
-        if (Math.floor(Math.random() * 100) > 97) {
-          addNPC()
-        }
+        if (spaceTime.timeMultiplier != 0) {
+          // 3% CHANCE ADD NPC
+          if (Math.floor(Math.random() * 100) > 97) {
+            addNPC()
+          }
 
-        // 2% CHANCE ADD POWERUP
-        if (Math.floor(Math.random() * 100) > 98) {
-          addPowerup()
+          // 2% CHANCE ADD POWERUP
+          if (Math.floor(Math.random() * 100) > 98) {
+            addPowerup()
+          }
         }
-
         if (spaceTime.timeMultiplier != 0)
           spaceTime.tick()
 
@@ -190,17 +195,19 @@ function initializeGame() {
           // special keys for when time is stopped
 
           // l: launch
-          if (kontra.keys.pressed('l')) {
+          if (cooldown == 0 && kontra.keys.pressed('l')) {
             isPressed.l = true
+            cooldown = TOFE.waitDelay * 10
             spaceTime.timeMultiplier = 1
             activePlanet = null
+            player.sprite.dy = 0
 
           } else {
             isPressed.l = false
           }
 
           // i: investigate
-          if (kontra.keys.pressed('i')) {
+          if (cooldown == 0 && kontra.keys.pressed('i')) {
             isPressed.i = true
             console.log('searching...')
 
@@ -226,6 +233,9 @@ function initializeGame() {
           }
 
         } else {
+          if (cooldown > 0)
+            cooldown -= 1
+
           // normal keys when playing (and time moving forward)
           if (spaceTime.timeDirection > 0) {
             if (kontra.keys.pressed('left')) {
@@ -351,8 +361,7 @@ function initializeGame() {
         if (TOFE.state != 'playing')
           return
 
-        player.sprite.render()
-        let items = [stars, npcs, powerups, planets]
+        let items = [stars, planets, npcs, powerups]
         items.forEach((i) => {
           i.forEach((s) => {
             if (s.isActive) {
@@ -364,6 +373,7 @@ function initializeGame() {
             }
           })
         })
+        player.sprite.render()
 
         guiHud()
       }
@@ -425,7 +435,7 @@ function createPowerups() {
 }
 
 function addPowerup() {
-  let types = [ 'air', 'water', 'food', 'fuel' ]
+  let types = [ 'air', 'water', 'food', 'fuel', 'hull', 'hull' ]
 
   if (player && player.hasArtifact('Time Controller')) {
     types.push('timeJuice')
@@ -439,7 +449,7 @@ function addPowerup() {
   let startY = Math.floor(Math.random() * kontra.canvas.height)
   let startSpeed = Math.floor(Math.random() * 2) + 1
   let type = types[Math.floor(Math.random() * types.length)]
-  let value = Math.floor(Math.random() * 9) + 1
+  let value = type == 'timeJuice' ? Math.floor(Math.random() * 1000) + 1 : Math.floor(Math.random() * 9) + 1
 
   powerups.push(new Powerup({ size, startX, startY, startSpeed, type, value, color: '#0000FF', active: true }))
 }
@@ -464,6 +474,8 @@ document.querySelector('.scr_start').addEventListener('click', focusCanvas)
 // UTILITY
 function guiHud() {
   let context = kontra.canvas.getContext('2d')
+
+  context.textAlign = 'left'
 
   if (context) {
     context.fillStyle = TOFE.theme[TOFE.selectedTheme].textColor
@@ -494,6 +506,12 @@ function guiHud() {
       currentX = 60
       currentY += 30
     }
+
+    let artifacts = player._artifacts.length > 0 ? player._artifacts.map((a) => a).join(', ') : ''
+      currentY += 30
+      currentX = 60
+      context.fillText(`${artifacts}`, currentX, currentY)
+      currentY += 30
   }
 }
 
@@ -836,6 +854,7 @@ function rewindTo(t) {
 }
 
 function randomRGB() {
+  /*
   let chars = "0123456789ABCDEF".split('')
   let numbers = []
 
@@ -843,6 +862,18 @@ function randomRGB() {
     numbers.push(Math.floor(Math.random() * 16))
 
   return "#" + numbers.join('')
+  */
+
+  let colors = [
+    '#773333',
+    '#337733',
+    '#333377',
+    '#777733',
+    '#337777',
+    '#773377',
+  ]
+
+  return colors[Math.floor(Math.random() * colors.length)]
 }
 
 function findArtifacts() {

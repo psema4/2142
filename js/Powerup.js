@@ -18,6 +18,17 @@ class Powerup extends SpaceEntity {
             value: opts.value || 1,
             radius: opts.radius || 2,
             speed: opts.startSpeed,
+
+            render: function() {
+                this.context.fillStyle = this.color
+
+                this.context.fillRect(this.x - Math.floor(this.width/2), this.y - Math.floor(this.height/2), this.width, this.height)
+
+                this.context.font = TOFE.theme[TOFE.selectedTheme].fontSmall
+                this.context.fillStyle = TOFE.theme[TOFE.selectedTheme].smallTextColor
+                this.context.textAlign = 'center'
+                this.context.fillText(`+${this.value} ${this.type.toUpperCase()}`, this.x, this.y + this.radius + 20)
+            },
         })
     }
 
