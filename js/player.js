@@ -4,6 +4,12 @@ class Player extends SpaceEntity {
 
         this._artifacts = []
 
+        this._hull = 100
+        this._air = 100
+        this._water = 100
+        this._food = 100
+        this._fuel = 100
+
         this.sprite = kontra.sprite({
             x: Math.floor(kontra.canvas.width / 2) - 20,
             y: Math.floor(kontra.canvas.height / 2) - 10,
@@ -15,13 +21,93 @@ class Player extends SpaceEntity {
         })
     }
 
+    get hull() {
+        return this._hull
+    }
+
+    get air() {
+        return this._air
+    }
+
+    get water() {
+        return this._water
+    }
+
+    get food() {
+        return this._food
+    }
+
+    get fuel() {
+        return this._fuel
+    }
+
+    set hull(v) {
+        if (v < 0)
+            v = 0
+
+        if (v > 100)
+            v = 100
+            
+        this._hull = v
+    }
+
+    set air(v) {
+        if (v < 0)
+            v = 0
+
+        if (v > 100)
+            v = 100
+            
+        this._air = v
+    }
+
+    set water(v) {
+        if (v < 0)
+            v = 0
+
+        if (v > 100)
+            v = 100
+            
+        this._water = v
+    }
+
+    set food(v) {
+        if (v < 0)
+            v = 0
+
+        if (v > 100)
+            v = 100
+            
+        this._food = v
+    }
+
+    set fuel(v) {
+        if (v < 0)
+            v = 0
+
+        if (v > 100)
+            v = 100
+            
+        this._fuel = v        
+    }
+
     tick() {
+        this.air -= 0.001
+        this.food -= 0.00025
+        this.water -= 0.0005
+        this.fuel -= 0.0015
+
         this._timeStates.push({
             x: this.sprite.x,
             y: this.sprite.y,
             dx: this.sprite.dx,
             dy: this.sprite.dy,
             speed: this.speed,
+            hull: this.hull,
+            air: this.air,
+            food: this.food,
+            water: this.water,
+            fuel: this.fuel,
         })
 
         if (this.debug)
@@ -35,6 +121,11 @@ class Player extends SpaceEntity {
             this.sprite.dx = this._timeStates[t].dx
             this.sprite.dy = this._timeStates[t].dy
             this.sprite.speed = this._timeStates[t].speed
+            this.hull = this._timeStates[t].hull
+            this.air = this._timeStates[t].air
+            this.water = this._timeStates[t].water
+            this.food = this._timeStates[t].food
+            this.fuel = this._timeStates[t].fuel
         }
     }
 

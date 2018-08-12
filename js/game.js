@@ -40,7 +40,8 @@ function initializeKontra() {
   }
 
   kontra.keys.bind(['enter', 'space'], function() {
-    rewindTo(spaceTime.time - 500)
+    if (player.hasArtifact('Time Controller'))
+      rewindTo(spaceTime.time - 500)
   });
 
   let isPressed = {
@@ -55,6 +56,12 @@ function initializeKontra() {
   // MAIN LOOP
   let loop = kontra.gameLoop({
     update: function() {
+      if (player._artifacts.length == 3)
+        win()
+
+      if (player.hull <= 0 || player.air <= 0 || player.water <= 0 || player.food <= 0 || player.fuel <= 0)
+        loose()
+
       if (spaceTime.timeMultiplier != 0)
         spaceTime.tick()
 
@@ -342,4 +349,26 @@ function findArtifacts() {
   let data = hasArtifacts.map((p) => { return { name: p.sprite.name, artifact: p.artifact } })
 
   return data
+}
+
+function playerStats() {
+  console.log(`Hull: ${player.hull}, Air: ${player.air}, Water: ${player.water}, Food: ${player.food}, Fuel: ${player.fuel}`)
+  console.log(`Artifacts:`, player._artifacts)
+  console.log('Remaining Artifacts:', findArtifacts())
+}
+
+function win() {
+  planets.forEach((p) => { p.isActive = false })
+  powerups.forEach((p) => { p.isActive = false })
+  npcs.forEach((n) => { n.isActive = false })
+
+  TOFE.state = 'win'
+}
+
+function loose() {
+  planets.forEach((p) => { p.isActive = false })
+  powerups.forEach((p) => { p.isActive = false })
+  npcs.forEach((n) => { n.isActive = false })
+
+  TOFE.state = 'loose'
 }

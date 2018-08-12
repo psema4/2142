@@ -24,6 +24,7 @@ class Powerup extends SpaceEntity {
     onCollideWithPlayer() {
         if (this.isActive) {
             console.log(`a powerup containing ${this.sprite.value} units of ${this.sprite.type} collided with the player!`)
+            player[this.sprite.type] += this.sprite.value
             this.destroy()
         }
     }

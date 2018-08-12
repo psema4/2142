@@ -53,9 +53,13 @@ class Planet extends SpaceEntity {
     }
 
     onCollideWithPlayer() {
-        console.log(`Player hit ${this.sprite.name}!`)
-        spaceTime.timeMultiplier = 0
-        activePlanet = this
+        if (this.sprite.name == 'Black Hole') {
+           player.hull = -1;
+
+        } else {
+            spaceTime.timeMultiplier = 0
+            activePlanet = this
+        }
     }
 
     /*
