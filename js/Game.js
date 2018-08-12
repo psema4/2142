@@ -8,11 +8,11 @@ var TOFE = {
   theme: {
     default: {
       textColor: '#FF0000',
-      font: '24px sans-serif',
+      font: '24px lucida console',
     },
     highContrast: {
       textColor: '#FFFFFF',
-      font: '24px serif',
+      font: '24px lucida console',
     }
   },
   selectedDifficulty: 'easy',
@@ -171,6 +171,16 @@ function initializeGame() {
 
         if (player && player.hull <= 0 || player.air <= 0 || player.water <= 0 || player.food <= 0 || player.fuel <= 0)
           loose()
+
+        // 3% CHANCE ADD NPC
+        if (Math.floor(Math.random() * 100) > 97) {
+          addNPC()
+        }
+
+        // 2% CHANCE ADD POWERUP
+        if (Math.floor(Math.random() * 100) > 98) {
+          addPowerup()
+        }
 
         if (spaceTime.timeMultiplier != 0)
           spaceTime.tick()
@@ -395,28 +405,43 @@ function createStars() {
 
 function createNPCs() {
   for (let i = 0; i < numNPCs; i++) {
-    let size = 10
-    let startX = Math.floor(Math.random() * 4096) - 2048
-    let startY = Math.floor(Math.random() * kontra.canvas.height)
-    let startSpeed = Math.floor(Math.random() * 2) + 1
-
-    npcs.push(new NPC({ startX, startY, size, startSpeed, color: '#FF0000', active: true }))
+    addNPC()
   }
 }
 
+function addNPC() {
+  let size = 10
+  let startX = Math.floor(Math.random() * 4096) - 2048
+  let startY = Math.floor(Math.random() * kontra.canvas.height)
+  let startSpeed = Math.floor(Math.random() * 2) + 1
+
+  npcs.push(new NPC({ startX, startY, size, startSpeed, color: '#FF0000', active: true }))
+}
+
 function createPowerups() {
+  for (let i = 0; i < numPowerups; i++) {
+    addPowerup()
+  }
+}
+
+function addPowerup() {
   let types = [ 'air', 'water', 'food', 'fuel' ]
 
-  for (let i = 0; i < numPowerups; i++) {
-    let size = 5
-    let startX = Math.floor(Math.random() * 4096) - 2048
-    let startY = Math.floor(Math.random() * kontra.canvas.height)
-    let startSpeed = Math.floor(Math.random() * 2) + 1
-    let type = types[Math.floor(Math.random() * types.length)]
-    let value = Math.floor(Math.random() * 9) + 1
-
-    powerups.push(new Powerup({ size, startX, startY, startSpeed, type, value, color: '#0000FF', active: true }))
+  if (player && player.hasArtifact('Time Controller')) {
+    types.push('timeJuice')
+    types.push('timeJuice')
+    types.push('timeJuice')
+    types.push('timeJuice')
   }
+
+  let size = 5
+  let startX = Math.floor(Math.random() * 4096) - 2048
+  let startY = Math.floor(Math.random() * kontra.canvas.height)
+  let startSpeed = Math.floor(Math.random() * 2) + 1
+  let type = types[Math.floor(Math.random() * types.length)]
+  let value = Math.floor(Math.random() * 9) + 1
+
+  powerups.push(new Powerup({ size, startX, startY, startSpeed, type, value, color: '#0000FF', active: true }))
 }
 
 function createPlanets() {
@@ -668,7 +693,7 @@ function menuScreen() {
     let rightColumn = cx + 50
 
     ctx.textAlign = 'center'
-    ctx.fillText('Menu', cx, currentY)
+    ctx.fillText('Pause', cx, currentY)
     currentY += 60
 
     if (cooldown == 0) {
@@ -702,10 +727,11 @@ function menuScreen() {
       ctx.fillText('Difficulty: Hard', rightColumn, currentY)
       currentY += 30
 
+      currentY = 700
       ctx.textAlign = 'center'
       ctx.fillText('<ENTER>', leftColumn, currentY)
       ctx.textAlign = 'left'
-      ctx.fillText('Play', rightColumn, currentY)
+      ctx.fillText('Back to game', rightColumn, currentY)
       currentY += 30
 
     } else {
@@ -730,8 +756,12 @@ function winScreen() {
 
     ctx.textAlign = 'center'
     ctx.fillText('You Win!', cx, cy)
-    ctx.fillText('<ENTER>', leftColumn, cy + 60)
-    ctx.fillText('Play Again', rightColumn, cy + 60)
+
+    currentY = 700
+    ctx.textAlign = 'center'
+    ctx.fillText('<ENTER>', leftColumn, currentY)
+    ctx.textAlign = 'left'
+    ctx.fillText('Continue', rightColumn, currentY)
   }
 }
 
@@ -750,8 +780,12 @@ function looseScreen() {
 
     ctx.textAlign = 'center'
     ctx.fillText('You Loose!', cx, cy)
-    ctx.fillText('<ENTER>', leftColumn, cy + 60)
-    ctx.fillText('Play Again', rightColumn, cy + 60)
+
+    currentY = 700
+    ctx.textAlign = 'center'
+    ctx.fillText('<ENTER>', leftColumn, currentY)
+    ctx.textAlign = 'left'
+    ctx.fillText('Continue', rightColumn, currentY)
   }
 }
 
