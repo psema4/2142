@@ -48,6 +48,9 @@ class SpaceEntity extends TemporalObject {
     }
 
     tick() {
+        if (TOFE.state != 'playing')
+            return
+
         this._timeStates.push({
             x: this.sprite.x,
             y: this.sprite.y,
@@ -62,6 +65,9 @@ class SpaceEntity extends TemporalObject {
     }
 
     restoreFromTick(t) {
+        if (TOFE.state != 'playing')
+            return
+
         if (t >= 0 && t < this._timeStates.length) {
             this.sprite.x = this._timeStates[t].x
             this.sprite.y = this._timeStates[t].y

@@ -20,29 +20,32 @@ let stars = []
 let planets = []
 
 let activePlanet = null
-let artifacts = [ 'Time Controller', 'Space Controller', 'Mind Controller' ]
 
 function initializeKontra() {
   setCanvasSize();
 
   kontra.init(document.querySelector('canvas'))
+}
 
+function initializeGame() {
+  let artifacts = [ 'Time Controller', 'Space Controller', 'Mind Controller' ]
+
+  npcs = []
+  powerups = []
+  stars = []
+  planets = []
   player = createPlayer()
   createStars()
   createNPCs()
   createPowerups()
   createPlanets()
+
   while (artifacts.length) {
     let planetNumber = (Math.floor(Math.random() * planets.length-1)) + 1
 
     if (planetNumber > 0 && !planets[planetNumber].artifact)
       planets[planetNumber].artifact = artifacts.pop();
   }
-
-  kontra.keys.bind(['enter', 'space'], function() {
-    if (player.hasArtifact('Time Controller'))
-      rewindTo(spaceTime.time - 500)
-  });
 
   let isPressed = {
     left: false,
@@ -56,6 +59,15 @@ function initializeKontra() {
   // MAIN LOOP
   let loop = kontra.gameLoop({
     update: function() {
+      if (TOFE.state == 'win' || TOFE.state == 'loose') {
+        if (kontra.keys.pressed('enter')) {
+          initializeGame();
+        }
+      }
+
+      if (TOFE.state != 'playing')
+        return
+
       if (player._artifacts.length == 3)
         win()
 
@@ -130,11 +142,16 @@ function initializeKontra() {
           } else {
             isPressed.down = false;
           }
+
+          if (kontra.keys.pressed('space')) {
+            if (player.hasArtifact('Time Controller'))
+              rewindTo(spaceTime.time - 500)
+          }
         }
       }
 
       // UPDATE SPRITES
-      if (spaceTime.timeMultiplier != 0) {
+      if (spaceTime.timeMultiplier != 0 && player && player.sprite) {
         player.sprite.update()
         
         let items = [stars, npcs, powerups, planets]
@@ -180,6 +197,15 @@ function initializeKontra() {
     },
 
     render: function() {
+      if (TOFE.state == 'win')
+        winScreen()
+
+      if (TOFE.state == 'loose')
+        looseScreen()
+
+      if (TOFE.state != 'playing')
+        return
+
       player.sprite.render()
       let items = [stars, npcs, powerups, planets]
       items.forEach((i) => {
@@ -197,7 +223,9 @@ function initializeKontra() {
   })
 
   TOFE.state = 'playing'
-  loop.start()
+
+  if (loop.isStopped)
+    loop.start()
 }
 
 // CREATE ALL THE THINGS
@@ -273,6 +301,7 @@ document.querySelector('.scr_start').addEventListener('click', focusCanvas)
 // UTILITY
 function splashScreen() {
   setCanvasSize()
+
   let canvas = document.querySelector('canvas')
   let ctx = canvas.getContext('2d')
 
@@ -288,6 +317,36 @@ function splashScreen() {
 }
 
 splashScreen()
+
+function winScreen() {
+  let canvas = document.querySelector('canvas')
+  let ctx = canvas.getContext('2d')
+
+  if (ctx) {
+    ctx.fillStyle = '#ff0000'
+    ctx.font = '24px sans-serif'
+
+    let cx = (Math.floor(canvas.width) / 2) - 40
+    let cy = (Math.floor(canvas.height) / 2)
+
+    ctx.fillText('You Win!', cx, cy)
+  }
+}
+
+function looseScreen() {
+  let canvas = document.querySelector('canvas')
+  let ctx = canvas.getContext('2d')
+
+  if (ctx) {
+    ctx.fillStyle = '#ff0000'
+    ctx.font = '24px sans-serif'
+
+    let cx = (Math.floor(canvas.width) / 2) - 40
+    let cy = (Math.floor(canvas.height) / 2)
+
+    ctx.fillText('You Loose!', cx, cy)
+  }
+}
 
 function setCanvasSize() {
   let canvas = document.querySelector('canvas')
@@ -308,6 +367,7 @@ function focusCanvas(evt) {
   document.querySelector('canvas').style.border = '0px solid #000';
 
   initializeKontra()
+  initializeGame()
 }
 
 function pause() {
@@ -357,12 +417,21 @@ function playerStats() {
   console.log('Remaining Artifacts:', findArtifacts())
 }
 
+function cleanup() {
+  player = null
+  stars = []
+  npcs = []
+  powerups = []
+}
+
 function win() {
   planets.forEach((p) => { p.isActive = false })
   powerups.forEach((p) => { p.isActive = false })
   npcs.forEach((n) => { n.isActive = false })
 
   TOFE.state = 'win'
+  winScreen()
+  cleanup()
 }
 
 function loose() {
@@ -371,4 +440,6 @@ function loose() {
   npcs.forEach((n) => { n.isActive = false })
 
   TOFE.state = 'loose'
+  looseScreen()
+  cleanup()
 }

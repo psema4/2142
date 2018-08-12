@@ -45,6 +45,9 @@ class Planet extends SpaceEntity {
     }
 
     onTick() {
+        if (TOFE.state != 'playing')
+            return
+
         if (this.sprite.name == "Black Hole") {
             if (spaceTime.timeDirection > 0) {
                 this.sprite.y += 0.0125
@@ -59,6 +62,7 @@ class Planet extends SpaceEntity {
         } else {
             spaceTime.timeMultiplier = 0
             activePlanet = this
+            console.log(`arrived at ${this.sprite.name}`)
         }
     }
 

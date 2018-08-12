@@ -51,6 +51,9 @@ class SpaceTime {
     }
 
     updateEntities() {
+        if (TOFE.state != 'playing')
+            return
+
         let items = [stars, npcs, powerups, planets]
         items.forEach((i) => {
             i.forEach((s) => {
@@ -60,9 +63,14 @@ class SpaceTime {
     }
 
     tick() {
+        if (TOFE.state != 'playing')
+            return
+
         if (this.timeDirection == 1) {
             this._time += 1
-            player.tick()
+
+            if (player)
+                player.tick()
 
             let items = [stars, npcs, powerups, planets]
             items.forEach((i) => {

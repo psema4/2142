@@ -92,6 +92,9 @@ class Player extends SpaceEntity {
     }
 
     tick() {
+        if (TOFE.state != 'playing')
+            return
+
         this.air -= 0.001
         this.food -= 0.00025
         this.water -= 0.0005
@@ -115,6 +118,9 @@ class Player extends SpaceEntity {
     }
 
     restoreFromTick(t) {
+        if (TOFE.state != 'playing')
+            return
+
         if (t >= 0 && t < this._timeStates.length) {
             this.sprite.x = this._timeStates[t].x
             this.sprite.y = this._timeStates[t].y
