@@ -56,6 +56,9 @@ function initializeGame() {
     down: false,
     space: false,
     enter: false,
+    i: false,
+    l: false,
+    p: false,
   }
 
   // MAIN LOOP
@@ -65,6 +68,24 @@ function initializeGame() {
         if (TOFE.state == 'win' || TOFE.state == 'loose') {
           if (kontra.keys.pressed('enter')) {
             initializeGame()
+          }
+
+        } else if (TOFE.state != 'playing') {
+          // FIXME: debounce
+          if (!isPressed.enter && kontra.keys.pressed('enter')) {
+            isPressed.enter = true
+
+            if (TOFE.state == 'firstLoad')
+              TOFE.state = 'story1'
+
+            else if (TOFE.state == 'story1')
+              TOFE.state = 'instructions'
+
+            else if (TOFE.state == 'instructions' || TOFE.state == 'menu')
+              TOFE.state = 'playing'
+
+          } else {
+            isPressed.enter = false
           }
         }
 
@@ -86,12 +107,17 @@ function initializeGame() {
 
           // l: launch
           if (kontra.keys.pressed('l')) {
+            isPressed.l = true
             spaceTime.timeMultiplier = 1
             activePlanet = null
+
+          } else {
+            isPressed.l = false
           }
 
           // i: investigate
           if (kontra.keys.pressed('i')) {
+            isPressed.i = true
             console.log('searching...')
 
             if (!activePlanet.artifact)
@@ -105,6 +131,9 @@ function initializeGame() {
               console.log('discovery! you found an artifact')
               playerStats()
             }
+
+          } else {
+            isPressed.i = false
           }
 
         } else {
@@ -148,6 +177,14 @@ function initializeGame() {
 
             } else {
               isPressed.down = false
+            }
+
+            if (!isPressed.p && kontra.keys.pressed('p')) {
+              isPressed.p = true
+              pause()
+
+            } else {
+              isPressed.p = false
             }
 
             if (kontra.keys.pressed('space')) {
@@ -204,6 +241,18 @@ function initializeGame() {
       },
 
       render: function() {
+        if (TOFE.state == 'firstLoad')
+          firstLoadScreen()
+
+        if (TOFE.state == 'story1')
+          storyScreen(1)
+
+        if (TOFE.state == 'instructions')
+          instructionsScreen()
+
+        if (TOFE.state == 'menu')
+          menuScreen()
+
         if (TOFE.state == 'win')
           winScreen()
 
@@ -230,7 +279,7 @@ function initializeGame() {
     })
   }
 
-  TOFE.state = 'playing'
+  firstLoad()
 
   if (loop.isStopped)
     loop.start()
@@ -317,14 +366,83 @@ function splashScreen() {
     ctx.fillStyle = '#ff0000'
     ctx.font = '24px sans-serif'
 
-    let cx = (Math.floor(canvas.width) / 2) - 40
-    let cy = (Math.floor(canvas.height) / 2)
+    let cx = (Math.floor(canvas.width) / 2) - 60
+    let cy = (Math.floor(canvas.height) / 2) - 60
 
-    ctx.fillText('Click to Start!', cx, cy)
+    ctx.fillText('Click to Start!', cx + 50, cy)
   }
 }
 
+// FIXME: move to more appropriate line number
 splashScreen()
+
+function firstLoadScreen() {
+  let canvas = document.querySelector('canvas')
+  let ctx = canvas.getContext('2d')
+
+  if (ctx) {
+    ctx.fillStyle = '#ff0000'
+    ctx.font = '24px sans-serif'
+
+    let cx = (Math.floor(canvas.width) / 2) - 40
+    let cy = (Math.floor(canvas.height) / 2) - 60
+
+    ctx.fillText('First Load', cx + 50, cy)
+    ctx.fillText('<Enter>', cx, cy + 60)
+    ctx.fillText('Continue', cx + 100, cy + 60)
+  }
+}
+
+function storyScreen(storyNumber) {
+  let canvas = document.querySelector('canvas')
+  let ctx = canvas.getContext('2d')
+
+  if (ctx) {
+    ctx.fillStyle = '#ff0000'
+    ctx.font = '24px sans-serif'
+
+    let cx = (Math.floor(canvas.width) / 2) - 40
+    let cy = (Math.floor(canvas.height) / 2) - 60
+
+    ctx.fillText('Story', cx + 50, cy)
+    ctx.fillText('<Enter>', cx, cy + 60)
+    ctx.fillText('Continue', cx + 100, cy + 60)
+  }
+}
+
+function instructionsScreen() {
+  let canvas = document.querySelector('canvas')
+  let ctx = canvas.getContext('2d')
+
+  if (ctx) {
+    ctx.fillStyle = '#ff0000'
+    ctx.font = '24px sans-serif'
+
+    let cx = (Math.floor(canvas.width) / 2) - 40
+    let cy = (Math.floor(canvas.height) / 2) - 60
+
+    ctx.fillText('Instructions', cx + 50, cy)
+    ctx.fillText('<Enter>', cx, cy + 60)
+    ctx.fillText('Play', cx + 100, cy + 60)
+  }
+}
+
+function menuScreen() {
+  let canvas = document.querySelector('canvas')
+  let ctx = canvas.getContext('2d')
+
+  if (ctx) {
+    ctx.fillStyle = '#ff0000'
+    ctx.font = '24px sans-serif'
+
+    let cx = (Math.floor(canvas.width) / 2) - 40
+    let cy = (Math.floor(canvas.height) / 2) - 60
+
+    ctx.fillText('Menu', cx + 50, cy)
+    ctx.fillText('<Enter>', cx, cy + 60)
+    ctx.fillText('Play', cx + 100, cy + 60)
+  }
+}
 
 function winScreen() {
   let canvas = document.querySelector('canvas')
@@ -335,9 +453,11 @@ function winScreen() {
     ctx.font = '24px sans-serif'
 
     let cx = (Math.floor(canvas.width) / 2) - 40
-    let cy = (Math.floor(canvas.height) / 2)
+    let cy = (Math.floor(canvas.height) / 2) - 60
 
-    ctx.fillText('You Win!', cx, cy)
+    ctx.fillText('You Win!', cx + 50, cy)
+    ctx.fillText('<Enter>', cx, cy + 60)
+    ctx.fillText('Play Again', cx + 100, cy + 60)
   }
 }
 
@@ -350,9 +470,11 @@ function looseScreen() {
     ctx.font = '24px sans-serif'
 
     let cx = (Math.floor(canvas.width) / 2) - 40
-    let cy = (Math.floor(canvas.height) / 2)
+    let cy = (Math.floor(canvas.height) / 2) - 60
 
-    ctx.fillText('You Loose!', cx, cy)
+    ctx.fillText('You Loose!', cx + 50, cy)
+    ctx.fillText('<Enter>', cx, cy + 60)
+    ctx.fillText('Play Again', cx + 100, cy + 60)
   }
 }
 
@@ -380,7 +502,7 @@ function focusCanvas(evt) {
 
 function pause() {
   if (TOFE.state === 'playing')
-    TOFE.state = 'paused'
+    TOFE.state = 'menu'
 
   else
     TOFE.state = 'playing'
@@ -430,6 +552,26 @@ function cleanup() {
   stars = []
   npcs = []
   powerups = []
+}
+
+function firstLoad() {
+  TOFE.state = 'firstLoad'
+  firstLoadScreen()
+}
+
+function story(page) {
+  TOFE.state = 'story' + page
+  storyScreen(page)
+}
+
+function instructions() {
+  TOFE.state = 'instructions'
+  instructionsScreen()
+}
+
+function menu() {
+  TOFE.state = 'menu'
+  menuScreen()
 }
 
 function win() {
