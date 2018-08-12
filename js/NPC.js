@@ -7,8 +7,13 @@ class NPC extends SpaceEntity {
 
         super(opts)
 
-        let prefix = 'ESF-'
+        let prefix = 'UHF'
         let id = Math.floor(Math.random() * 8999) + 1000
+        let builds = ['A', 'B', 'C', 'D', 'E']
+        let build = builds[Math.floor(Math.random() * builds.length)]
+
+        this.isColliding = false
+        this.cooldown = 0
 
         this.sprite = kontra.sprite({
             x: opts.startX,
@@ -19,7 +24,7 @@ class NPC extends SpaceEntity {
             dx: /* TOFE.state === 'playing' && */ -1 * opts.startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
             radius: opts.radius || 2,
             speed: opts.startSpeed,
-            name: prefix + id,
+            name: `${prefix}-${id}-${build}`,
 
             render: function() {
                 this.context.fillStyle = this.color
@@ -29,15 +34,23 @@ class NPC extends SpaceEntity {
                 this.context.font = TOFE.theme[TOFE.selectedTheme].fontSmall
                 this.context.fillStyle = TOFE.theme[TOFE.selectedTheme].smallTextColor
                 this.context.textAlign = 'center'
-                this.context.fillText(`${this.name}`, this.x, this.y + this.radius + 20)
+                this.context.fillText(`${this.name}`, this.x, this.y + 20)
             },
         })
     }
 
     onCollideWithPlayer() {
-        if (this.isActive) {
-            console.log('a ship collided with player!')
+        if (this.isActive && !this.isColliding) {
+            this.isColliding = true
+            this.cooldown = 120
             player.hull -= 1
+            player.speak('hurt')
+
+        } else {
+            this.cooldown -= 1
+
+            if (this.cooldown == 0)
+                this.isColliding = false
         }
     }
 

@@ -9,6 +9,9 @@ class Planet extends SpaceEntity {
 
         this._artifact = opts.artifact
 
+        this.isColliding = false
+        this.cooldown = 0
+
         this.sprite = new kontra.sprite({
             x: opts.startX,
             y: opts.startY,
@@ -31,12 +34,13 @@ class Planet extends SpaceEntity {
                 this.context.fillText(`${this.name}`, this.x, this.y + this.radius + 20)
             },
 
-            collidesWith: function(object) {
-                let dx = this.x - object.x
-                let dy = this.y - object.y
+            collidesWith: function(object, offset = 0) {
+                let dx = Math.abs(this.x - (object.x || object.sprite.x))
+                let dy = Math.abs(this.y - (object.y || object.sprite.y))
                 let distance = Math.sqrt(dx * dx + dy * dy)
+                let limit = this.radius + (object.radius || object.sprite.radius) + offset
 
-                return distance < this.radius + object.radius
+                return distance < limit
             },
         })
     }
@@ -61,16 +65,32 @@ class Planet extends SpaceEntity {
     }
 
     onCollideWithPlayer() {
-        if (this.sprite.name == 'Black Hole') {
-           player.hull = -1
+        if (cooldown > 0)
+            return
+
+        if (this.isActive && !this.isColliding) {
+            this.isColliding = true
+            this.cooldown = 120
+                if (this.sprite.name == 'Black Hole') {
+                    player.onCollideWithBlackHole()
+
+                } else {
+                    //cooldown == 0
+                    spaceTime.timeMultiplier = 0
+                    activePlanet = this
+                    player.speak('text', `Away team to ${this.sprite.name}`)
+                }
 
         } else {
-            if (cooldown == 0) {
-                spaceTime.timeMultiplier = 0
-                activePlanet = this
-                console.log(`arrived at ${this.sprite.name}`)
-            }
+            this.cooldown -= 1
+
+            if (this.cooldown == 0)
+                this.isColliding = false
         }
+    }
+
+    onCollideWithBlackHole() {
+        // ignore
     }
 
     /*

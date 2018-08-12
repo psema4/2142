@@ -199,6 +199,7 @@ function initializeGame() {
             isPressed.l = true
             cooldown = TOFE.waitDelay * 10
             spaceTime.timeMultiplier = 1
+            player.speak('text', `Leaving ${activePlanet.sprite.name}`)
             activePlanet = null
             player.sprite.dy = 0
 
@@ -209,7 +210,7 @@ function initializeGame() {
           // i: investigate
           if (cooldown == 0 && kontra.keys.pressed('i')) {
             isPressed.i = true
-            console.log('searching...')
+            player.speak('text', 'Investigating...')
 
             if (!activePlanet.artifact)
               return
@@ -224,7 +225,7 @@ function initializeGame() {
 
               activePlanet.artifact = null
 
-              console.log('discovery! you found an artifact')
+              player.speak('text', `Discovered an alien ${activePlanet.artifact} artifact!`)
               playerStats()
             }
 
@@ -320,19 +321,20 @@ function initializeGame() {
               if (s.sprite) s.sprite.update()
             
               // COLLISIONS
-              if (s.onCollideWithPlayer)
+              if (s.onCollideWithPlayer) {
                 if (s.sprite.collidesWith(player.sprite))
                   s.onCollideWithPlayer()
 
                 if (s.sprite && s.sprite.collidesWith(player.sprite))
                   s.onCollideWithPlayer()
+              }
 
-              if (s.collidesWith && s.collidesWith(planets[0]))
-                s.destroy()
-
-              if (s.sprite && s.sprite.collidesWith(planets[0])) {
-                if (s.destroy) s.destroy()
-                if (s.sprite && s.sprite.destroy) s.sprite.destroy()
+              if (s.onCollideWithBlackHole) {
+                if (s.constructor.name == 'NPC' || s.constructor.name == 'Powerup') {
+                  if (planets[0].sprite.collidesWith(s)) {
+                    s.onCollideWithBlackHole()
+                  }
+                }
               }
             })
           })
@@ -420,6 +422,9 @@ function createNPCs() {
 }
 
 function addNPC() {
+  if (spaceTime.timeDirection < 1)
+    return
+
   let size = 10
   let startX = Math.floor(Math.random() * 4096) - 2048
   let startY = Math.floor(Math.random() * kontra.canvas.height)
@@ -435,6 +440,9 @@ function createPowerups() {
 }
 
 function addPowerup() {
+  if (spaceTime.timeDirection < 1)
+    return
+    
   let types = [ 'air', 'water', 'food', 'fuel', 'hull', 'hull' ]
 
   if (player && player.hasArtifact('Time Controller')) {
@@ -470,6 +478,7 @@ function createPlanets() {
 // BROWSER EVENTS
 window.addEventListener('resize', setCanvasSize)
 document.querySelector('.scr_start').addEventListener('click', focusCanvas)
+document.body.addEventListener('keypress', focusCanvas)
 
 // UTILITY
 function guiHud() {
@@ -507,7 +516,7 @@ function guiHud() {
       currentY += 30
     }
 
-    let artifacts = player._artifacts.length > 0 ? player._artifacts.map((a) => a).join(', ') : ''
+    let artifacts = player._artifacts.length > 0 ? 'Artifacts: ' + player._artifacts.map((a) => a).join(', ') : ''
       currentY += 30
       currentX = 60
       context.fillText(`${artifacts}`, currentX, currentY)
@@ -529,7 +538,7 @@ function splashScreen() {
     let cy = (Math.floor(canvas.height) / 2) - 220
 
     ctx.textAlign = 'center'
-    ctx.fillText('Click to Start!', cx, cy)
+    ctx.fillText('Press <ENTER> to Start', cx, cy)
   }
 }
 
@@ -817,6 +826,7 @@ function setCanvasSize() {
 function focusCanvas(evt) {
   let scrStart = document.querySelector('.scr_start')
   scrStart.removeEventListener('click', focusCanvas)
+  document.body.removeEventListener('keypress', focusCanvas)
   scrStart.style.display = 'none'
 
   evt.preventDefault()

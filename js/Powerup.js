@@ -7,6 +7,9 @@ class Powerup extends SpaceEntity {
 
         super(opts)
 
+        this.isColliding = false
+        this.cooldown = 0
+
         this.sprite = kontra.sprite({
             x: opts.startX,
             y: opts.startY,
@@ -34,9 +37,20 @@ class Powerup extends SpaceEntity {
 
     onCollideWithPlayer() {
         if (this.isActive) {
-            console.log(`a powerup containing ${this.sprite.value} units of ${this.sprite.type} collided with the player!`)
+        }
+
+        if (this.isActive && !this.isColliding) {
+            this.isColliding = true
+            this.cooldown = 120
+            player.speak('text', `+${this.sprite.value} ${this.sprite.type}`)
             player[this.sprite.type] += this.sprite.value
             this.destroy()
+
+        } else {
+            this.cooldown -= 1
+
+            if (this.cooldown == 0)
+                this.isColliding = false
         }
     }
 

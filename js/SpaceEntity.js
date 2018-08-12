@@ -77,4 +77,8 @@ class SpaceEntity extends TemporalObject {
             this.isActive = this._timeStates[t].active
         }
     }
+
+    onCollideWithBlackHole() {
+        this.destroy()
+    }
 }

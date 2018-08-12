@@ -11,6 +11,9 @@ class Player extends SpaceEntity {
         this._fuel = 100
         this._timeJuice = 0
 
+        this._speaking = false
+        this._message = ''
+
         this.sprite = kontra.sprite({
             x: Math.floor(kontra.canvas.width / 2) - 20,
             y: Math.floor(kontra.canvas.height / 2) - 10,
@@ -19,6 +22,25 @@ class Player extends SpaceEntity {
             height: 20,
             dx: 0,
             radius: 2,
+            speaking: false,
+            message: '',
+
+            render: function() {
+                this.context.fillStyle = this.color
+
+                this.context.fillRect(this.x - Math.floor(this.width/2), this.y - Math.floor(this.height/2), this.width, this.height)
+
+                if (!this.speaking && this.message != '') {
+                    let self = this;
+
+                    this.context.font = TOFE.theme[TOFE.selectedTheme].fontSmall
+                    this.context.fillStyle = TOFE.theme[TOFE.selectedTheme].smallTextColor
+                    this.context.textAlign = 'center'
+                    this.context.fillText(`${this.message}`, this.x, this.y - 20)
+
+                    setTimeout(() => { this.message = '' }, 1000)
+                }
+            },
         })
     }
 
@@ -44,6 +66,14 @@ class Player extends SpaceEntity {
 
     get timeJuice() {
         return this._timeJuice
+    }
+
+    get speaking() {
+        return this._speaking
+    }
+
+    get message() {
+        return this._message
     }
 
     set hull(v) {
@@ -103,6 +133,16 @@ class Player extends SpaceEntity {
         this._timeJuice = v
     }
 
+    set speaking(v) {
+        this._speaking = !!v
+        this.sprite.speaking = !!v
+    }
+
+    set message(m = '') {
+        this._message = m
+        this.sprite.message = m
+    }
+
     tick() {
         if (TOFE.state != 'playing')
             return
@@ -156,5 +196,27 @@ class Player extends SpaceEntity {
 
     hasArtifact(v) {
         return this._artifacts.includes(v)
+    }
+
+    speak(type = 'surprise', message = '') {
+        if (this._speaking)
+            return
+
+        if (type != 'text') {
+            let types = {
+                surprise: ['What the?!', 'Holy Mackeral!', 'OMG'],
+                hurt: ['Ow', 'What the?!', 'Oops', 'Uh-oh', 'Watch out!', 'Seriously?']
+            }
+
+            let messageIdx = Math.floor(Math.random() * types[type].length)
+            this.message = types[type][messageIdx] 
+
+        } else {
+            this.message = message
+        }
+    }
+
+    onCollideWithBlackHole() {
+        loose()
     }
 }
