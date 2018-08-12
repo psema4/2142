@@ -4,6 +4,17 @@ var TOFE = {
   state: 'init',
   debug: false,
   waitDelay: 10,
+  selectedTheme: 'default',
+  theme: {
+    default: {
+      textColor: '#FF0000',
+      font: '24px sans-serif',
+    },
+    highContrast: {
+      textColor: '#FFFFFF',
+      font: '24px serif',
+    }
+  },
   selectedDifficulty: 'easy',
   difficulty: {
     easy: {
@@ -17,19 +28,19 @@ var TOFE = {
     },
     medium: {
       resources: {
-        air:       -0.001,
-        food:      -0.00025,
-        water:     -0.0005,
-        fuel:      -0.0015,
+        air:       -0.01,
+        food:      -0.0025,
+        water:     -0.005,
+        fuel:      -0.015,
         timeJuice: 0,
       },
     },
     hard: {
       resources: {
-        air:       -0.001,
-        food:      -0.00025,
-        water:     -0.0005,
-        fuel:      -0.0015,
+        air:       -0.1,
+        food:      -0.025,
+        water:     -0.05,
+        fuel:      -0.15,
         timeJuice: 0,
       },
     }
@@ -401,8 +412,8 @@ function splashScreen() {
   let ctx = canvas.getContext('2d')
 
   if (ctx) {
-    ctx.fillStyle = '#ff0000'
-    ctx.font = '24px sans-serif'
+    ctx.fillStyle = TOFE.theme[TOFE.selectedTheme].textColor
+    ctx.font = TOFE.theme[TOFE.selectedTheme].font
 
     let cx = (Math.floor(canvas.width) / 2) - 60
     let cy = (Math.floor(canvas.height) / 2) - 60
@@ -419,21 +430,28 @@ function firstLoadScreen() {
   let ctx = canvas.getContext('2d')
 
   if (ctx) {
-    ctx.fillStyle = '#ff0000'
-    ctx.font = '24px sans-serif'
+    ctx.fillStyle = TOFE.theme[TOFE.selectedTheme].textColor
+    ctx.font = TOFE.theme[TOFE.selectedTheme].font
 
-    let cx = (Math.floor(canvas.width) / 2) - 40
-    let cy = (Math.floor(canvas.height) / 2) - 60
+    let cx = (Math.floor(canvas.width) / 2)
+    let cy = (Math.floor(canvas.height) / 2)
+    let offsetX = -400
+    let offsetY = -200
+    let currentX = cx + offsetX
+    let currentY = cy + offsetY
+    let indentX = currentX + 30
 
-    ctx.fillText('First Load', cx + 50, cy)
+    ctx.fillText('First Load', cx - 65, currentY)
+    currentY += 60
 
     if (cooldown == 0) {
-      ctx.fillText('<Enter>', cx, cy + 60)
-      ctx.fillText('Continue', cx + 100, cy + 60)
+      ctx.fillText('<Enter>', currentX, currentY)
+      ctx.fillText('Continue', currentX + 100, currentY)
+      currentY += 30
 
     } else {
       if (TOFE.debug)
-        ctx.fillText('Please wait...', cx, cy + 60)
+        ctx.fillText('Please wait...', currentX, currentY)
     }
   }
 }
@@ -443,21 +461,28 @@ function storyScreen(storyNumber) {
   let ctx = canvas.getContext('2d')
 
   if (ctx) {
-    ctx.fillStyle = '#ff0000'
-    ctx.font = '24px sans-serif'
+    ctx.fillStyle = TOFE.theme[TOFE.selectedTheme].textColor
+    ctx.font = TOFE.theme[TOFE.selectedTheme].font
 
-    let cx = (Math.floor(canvas.width) / 2) - 40
-    let cy = (Math.floor(canvas.height) / 2) - 60
+    let cx = (Math.floor(canvas.width) / 2)
+    let cy = (Math.floor(canvas.height) / 2)
+    let offsetX = -400
+    let offsetY = -200
+    let currentX = cx + offsetX
+    let currentY = cy + offsetY
+    let indentX = currentX + 30
 
-    ctx.fillText('Story', cx + 50, cy)
+    ctx.fillText('Story', cx - 45, currentY)
+    currentY += 60
 
     if (cooldown == 0) {
-      ctx.fillText('<Enter>', cx, cy + 60)
-      ctx.fillText('Continue', cx + 100, cy + 60)
+      ctx.fillText('<Enter>', currentX, currentY)
+      ctx.fillText('Continue', currentX + 100, currentY)
+      currentY += 30
 
     } else {
       if (TOFE.debug)
-        ctx.fillText('Please wait...', cx, cy + 60)
+        ctx.fillText('Please wait...', currentX, currentY)
     }
   }
 }
@@ -467,21 +492,60 @@ function instructionsScreen() {
   let ctx = canvas.getContext('2d')
 
   if (ctx) {
-    ctx.fillStyle = '#ff0000'
-    ctx.font = '24px sans-serif'
+    ctx.fillStyle = TOFE.theme[TOFE.selectedTheme].textColor
+    ctx.font = TOFE.theme[TOFE.selectedTheme].font
 
-    let cx = (Math.floor(canvas.width) / 2) - 40
-    let cy = (Math.floor(canvas.height) / 2) - 60
+    let cx = (Math.floor(canvas.width) / 2)
+    let cy = (Math.floor(canvas.height) / 2)
+    let offsetX = -400
+    let offsetY = -200
+    let currentX = cx + offsetX
+    let currentY = cy + offsetY
+    let indentX = currentX + 30
 
-    ctx.fillText('Instructions', cx + 50, cy)
+    ctx.fillText('Instructions', cx - 65, currentY)
+    currentY += 60
 
     if (cooldown == 0) {
-      ctx.fillText('<Enter>', cx, cy + 60)
-      ctx.fillText('Play', cx + 100, cy + 60)
+      ctx.fillText('Objective:', currentX, currentY)
+      currentY += 60
+
+      ctx.fillText("Don't die. Seriously, don't run out of air. Or water.", indentX, currentY)
+      currentY += 30
+
+      ctx.fillText("Or food. Or fuel! Also, don't blow up!", indentX, currentY)
+      currentY += 30
+
+      ctx.fillText("And stay away from that Black Hole. Find a way out of this mess.", indentX, currentY)
+      currentY += 60
+
+
+      ctx.fillText('Keys:', currentX, currentY)
+      currentY += 60
+
+      ctx.fillText('<Enter>', indentX, currentY)
+      ctx.fillText('Play / Continue', indentX + 100, currentY)
+      currentY += 30
+
+      ctx.fillText('<Space>', indentX, currentY)
+      ctx.fillText('Use Artifact', indentX + 100, currentY)
+      currentY += 30
+
+      ctx.fillText('<Up>', indentX, currentY)
+      ctx.fillText('Move up', indentX + 100, currentY)
+      currentY += 30
+
+      ctx.fillText('<Down>', indentX, currentY)
+      ctx.fillText('Move down', indentX + 100, currentY)
+      currentY += 30
+
+      ctx.fillText('<P>', indentX, currentY)
+      ctx.fillText('Pause', indentX + 100, currentY)
+      currentY += 30
 
     } else {
       if (TOFE.debug)
-        ctx.fillText('Please wait...', cx, cy + 60)
+        ctx.fillText('Please wait...', currentX, currentY)
     }
   }
 }
@@ -491,21 +555,28 @@ function menuScreen() {
   let ctx = canvas.getContext('2d')
 
   if (ctx) {
-    ctx.fillStyle = '#ff0000'
-    ctx.font = '24px sans-serif'
+    ctx.fillStyle = TOFE.theme[TOFE.selectedTheme].textColor
+    ctx.font = TOFE.theme[TOFE.selectedTheme].font
 
-    let cx = (Math.floor(canvas.width) / 2) - 40
-    let cy = (Math.floor(canvas.height) / 2) - 60
+    let cx = (Math.floor(canvas.width) / 2)
+    let cy = (Math.floor(canvas.height) / 2)
+    let offsetX = -400
+    let offsetY = -200
+    let currentX = cx + offsetX
+    let currentY = cy + offsetY
+    let indentX = currentX + 30
 
-    ctx.fillText('Menu', cx + 50, cy)
+    ctx.fillText('Menu', cx - 65, currentY)
+    currentY += 60
 
     if (cooldown == 0) {
-      ctx.fillText('<Enter>', cx, cy + 60)
-      ctx.fillText('Play', cx + 100, cy + 60)
+      ctx.fillText('<Enter>', currentX, currentY)
+      ctx.fillText('Play', currentX + 100, currentY)
+      currentY += 30
 
     } else {
       if (TOFE.debug)
-        ctx.fillText('Please wait...', cx, cy + 60)
+        ctx.fillText('Please wait...', currentX, currentY)
     }
   }
 }
@@ -515,8 +586,8 @@ function winScreen() {
   let ctx = canvas.getContext('2d')
 
   if (ctx) {
-    ctx.fillStyle = '#ff0000'
-    ctx.font = '24px sans-serif'
+    ctx.fillStyle = TOFE.theme[TOFE.selectedTheme].textColor
+    ctx.font = TOFE.theme[TOFE.selectedTheme].font
 
     let cx = (Math.floor(canvas.width) / 2) - 40
     let cy = (Math.floor(canvas.height) / 2) - 60
@@ -532,8 +603,8 @@ function looseScreen() {
   let ctx = canvas.getContext('2d')
 
   if (ctx) {
-    ctx.fillStyle = '#ff0000'
-    ctx.font = '24px sans-serif'
+    ctx.fillStyle = TOFE.theme[TOFE.selectedTheme].textColor
+    ctx.font = TOFE.theme[TOFE.selectedTheme].font
 
     let cx = (Math.floor(canvas.width) / 2) - 40
     let cy = (Math.floor(canvas.height) / 2) - 60
