@@ -20,11 +20,10 @@ class NPC extends SpaceEntity {
     }
 
     onCollideWithPlayer() {
-        console.log('a ship collided with player!')
-    }
-
-    destroy() {
-        // destroy this sprite
+        if (this.isActive) {
+            console.log('a ship collided with player!')
+            this.destroy()
+        }
     }
 
     /*

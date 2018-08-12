@@ -7,12 +7,14 @@ class Planet extends SpaceEntity {
 
         super(opts)
 
+        this._artifact = opts.artifact
+
         this.sprite = new kontra.sprite({
             x: opts.startX,
             y: opts.startY,
             color: opts.color,
             dx: /* TOFE.state === 'playing' && */ -1 * opts.startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
-            type: opts.type,
+            name: opts.name,
             speed: opts.startSpeed,
             radius: opts.radius,
 
@@ -34,24 +36,26 @@ class Planet extends SpaceEntity {
         })
     }
 
-    onTick() {
-        if (this.sprite.type == "Black Hole") {
-            if (spaceTime.timeDirection > 0) {
-            this.sprite.y += 0.125
+    get artifact() {
+        return this._artifact
+    }
 
-            // FIXME: this is broken :(
-            } else {
-            this.sprite.y -= 0.125
+    set artifact(v) {
+        this._artifact = v
+    }
+
+    onTick() {
+        if (this.sprite.name == "Black Hole") {
+            if (spaceTime.timeDirection > 0) {
+                this.sprite.y += 0.0125
             }
         }
     }
 
     onCollideWithPlayer() {
-        console.log(`Player hit ${this.sprite.type}!`)
-    }
-
-    destroy() {
-        // destroy this sprite
+        console.log(`Player hit ${this.sprite.name}!`)
+        spaceTime.timeMultiplier = 0
+        activePlanet = this
     }
 
     /*

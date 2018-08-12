@@ -2,6 +2,8 @@ class Player extends SpaceEntity {
     constructor(opts = { speed: 0 }) {
         super(opts)
 
+        this._artifacts = []
+
         this.sprite = kontra.sprite({
             x: Math.floor(kontra.canvas.width / 2) - 20,
             y: Math.floor(kontra.canvas.height / 2) - 10,
@@ -34,5 +36,13 @@ class Player extends SpaceEntity {
             this.sprite.dy = this._timeStates[t].dy
             this.sprite.speed = this._timeStates[t].speed
         }
+    }
+
+    addArtifact(v) {
+        this._artifacts.push(v)
+    }
+
+    hasArtifact(v) {
+        return this._artifacts.includes(v);
     }
 }

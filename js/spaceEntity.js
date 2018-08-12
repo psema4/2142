@@ -1,16 +1,23 @@
 class SpaceEntity extends TemporalObject {
-    constructor(opts = { speed: 0 }) {
+    constructor(opts = { debug: false, active: true, speed: 0 }) {
         let speed = opts && opts.speed || 0
 
         super()
 
         this._debug = false
+        this._active = opts.active
         this._speed = speed
         this.sprite = null
+
+        this.isActive = opts.active
     }
 
     get debug() {
         return this._debug
+    }
+
+    get isActive() {
+        return this._isActive
     }
 
     get speed() {
@@ -19,6 +26,10 @@ class SpaceEntity extends TemporalObject {
 
     set debug(v) {
         this._debug = !!v
+    }
+
+    set isActive(v) {
+        this._isActive = !!v;
     }
 
     set speed(v) {
@@ -31,6 +42,11 @@ class SpaceEntity extends TemporalObject {
         this._speed = v
     }
 
+    
+    destroy() {
+        this.isActive = false;
+    }
+
     tick() {
         this._timeStates.push({
             x: this.sprite.x,
@@ -38,6 +54,7 @@ class SpaceEntity extends TemporalObject {
             dx: this.sprite.dx,
             dy: this.sprite.dy,
             speed: this.speed,
+            active: this.isActive,
         })
 
         if (this.debug)
@@ -51,6 +68,7 @@ class SpaceEntity extends TemporalObject {
             this.sprite.dx = this._timeStates[t].dx
             this.sprite.dy = this._timeStates[t].dy
             this.sprite.speed = this._timeStates[t].speed
+            this.isActive = this._timeStates[t].active
         }
     }
 }

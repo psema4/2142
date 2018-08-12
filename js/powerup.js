@@ -14,17 +14,18 @@ class Powerup extends SpaceEntity {
             width: opts.size,
             height: opts.size,
             dx: /* TOFE.state === 'playing' && */ -1 * opts.startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
+            type: opts.type || 'air',
+            value: opts.value || 1,
             radius: opts.radius || 2,
             speed: opts.startSpeed,
         })
     }
 
     onCollideWithPlayer() {
-        console.log('a powerup collided with the player!')
-    }
-
-    destroy() {
-        // destroy this sprite
+        if (this.isActive) {
+            console.log(`a powerup containing ${this.sprite.value} units of ${this.sprite.type} collided with the player!`)
+            this.destroy()
+        }
     }
 
     /*
