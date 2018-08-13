@@ -22,30 +22,39 @@ var TOFE = {
   selectedDifficulty: 'easy',
   difficulty: {
     easy: {
+      startingNPCs:     50,
+      startingPowerups: 25,
+      ship2shipDamage:  10,
       resources: {
-        air:       -0.001,
-        food:      -0.00025,
-        water:     -0.0005,
-        fuel:      -0.0015,
-        timeJuice: 0,
+        air:              -0.001,
+        food:             -0.00025,
+        water:            -0.0005,
+        fuel:             -0.0015,
+        timeJuice:        0,
       },
     },
     medium: {
+      startingNPCs:     100,
+      startingPowerups: 10,
+      ship2shipDamage:  25,
       resources: {
-        air:       -0.01,
-        food:      -0.0025,
-        water:     -0.005,
-        fuel:      -0.015,
-        timeJuice: 0,
+        air:              -0.01,
+        food:             -0.0025,
+        water:            -0.005,
+        fuel:             -0.015,
+        timeJuice:        0,
       },
     },
     hard: {
+      startingNPCs:     100,
+      startingPowerups: 5,
+      ship2shipDamage:  50,
       resources: {
-        air:       -0.1,
-        food:      -0.025,
-        water:     -0.05,
-        fuel:      -0.15,
-        timeJuice: 0,
+        air:              -0.1,
+        food:             -0.025,
+        water:            -0.05,
+        fuel:             -0.15,
+        timeJuice:        0,
       },
     }
   }
@@ -60,8 +69,8 @@ let spaceTime = new SpaceTime({ timeMultiplier: 1 })
 let player = null
 
 let numStars = 50 + Math.floor(Math.random() * 50)
-let numNPCs = 10 + Math.floor(Math.random() * 10)
-let numPowerups = 5 + Math.floor(Math.random() * 5)
+let numNPCs = TOFE.difficulty[TOFE.selectedDifficulty].startingNPCs
+let numPowerups = TOFE.difficulty[TOFE.selectedDifficulty].startingPowerups
 let numPlanets = 6
 
 let npcs = []
@@ -397,7 +406,7 @@ function createStars() {
   for (let i = 0; i < numStars; i++) {
     let starSize = Math.floor(Math.random() * 2) + 1
     let startX = Math.floor(Math.random() * 4096) - 2048
-    let startY = Math.floor(Math.random() * kontra.canvas.height)
+    let startY = Math.floor(Math.random() * kontra.canvas.height - (starSize * 4))
     let startSpeed = Math.floor(Math.random() * 2) + 1
 
     stars.push(
@@ -416,18 +425,19 @@ function createStars() {
 }
 
 function createNPCs() {
+  console.log(`creating ${numNPCs} NPC's`)
   for (let i = 0; i < numNPCs; i++) {
-    addNPC()
+    addNPC(true)
   }
 }
 
-function addNPC() {
+function addNPC(initSpawn = false) {
   if (spaceTime.timeDirection < 1)
     return
 
   let size = 10
-  let startX = Math.floor(Math.random() * 4096) - 2048
-  let startY = Math.floor(Math.random() * kontra.canvas.height)
+  let startX = initSpawn ? Math.floor(Math.random() * 4096) - 2048 : Math.floor(Math.random() * 2048) + 2048
+  let startY = Math.floor(Math.random() * kontra.canvas.height - (size * 4))
   let startSpeed = Math.floor(Math.random() * 2) + 1
 
   npcs.push(new NPC({ startX, startY, size, startSpeed, color: '#FF0000', active: true }))
@@ -435,11 +445,11 @@ function addNPC() {
 
 function createPowerups() {
   for (let i = 0; i < numPowerups; i++) {
-    addPowerup()
+    addPowerup(true)
   }
 }
 
-function addPowerup() {
+function addPowerup(initSpawn = false) {
   if (spaceTime.timeDirection < 1)
     return
     
@@ -453,8 +463,8 @@ function addPowerup() {
   }
 
   let size = 5
-  let startX = Math.floor(Math.random() * 4096) - 2048
-  let startY = Math.floor(Math.random() * kontra.canvas.height)
+  let startX = initSpawn ? Math.floor(Math.random() * 4096) - 2048 : Math.floor(Math.random() * 2048) + 2048
+  let startY = Math.floor(Math.random() * kontra.canvas.height - (size * 4))
   let startSpeed = Math.floor(Math.random() * 2) + 1
   let type = types[Math.floor(Math.random() * types.length)]
   let value = type == 'timeJuice' ? Math.floor(Math.random() * 1000) + 1 : Math.floor(Math.random() * 9) + 1
@@ -466,7 +476,7 @@ function createPlanets() {
   for (let i = 0; i < numPlanets; i++) {
     let radius = i == 0 ? 1000 : Math.floor(Math.random() * 40) + 10
     let startX = i == 0 ? player.sprite.x : Math.floor(Math.random() * 4096) - 2048
-    let startY = i == 0 ? -950 : Math.floor(Math.random() * (kontra.canvas.height - 200)) + 200
+    let startY = i == 0 ? -950 : Math.floor(Math.random() * (kontra.canvas.height - (radius * 4)- 300)) + 300
     let startSpeed = i == 0 ? 0 : 1
     let name = i == 0 ? 'Black Hole': 'Planet ' + i
     let color = i == 0 ? '#FFFFFF' : randomRGB()
@@ -564,7 +574,6 @@ function firstLoadScreen() {
     let rightColumn = cx + 100
 
     ctx.textAlign = 'center'
-    //ctx.fillText('First Load', cx, currentY)
     currentY = 700
 
     if (cooldown == 0) {
@@ -598,7 +607,6 @@ function storyScreen(storyNumber) {
     let rightColumn = cx + 100
 
     ctx.textAlign = 'center'
-    //ctx.fillText('Story', cx, currentY)
     currentY = 700
 
     if (cooldown == 0) {
@@ -853,7 +861,7 @@ function setTimeMultiplier(v, reverse = false) {
 }
 
 function rewindTo(t) {
-  if (spaceTime.timeDirection < 0 || !t || t >= spaceTime.time && player.timeJuice <= 0)
+  if (spaceTime.timeDirection < 0 || !t || t >= spaceTime.time || player.timeJuice <= 0)
     return
 
   if (t < 0)
@@ -864,16 +872,6 @@ function rewindTo(t) {
 }
 
 function randomRGB() {
-  /*
-  let chars = "0123456789ABCDEF".split('')
-  let numbers = []
-
-  for (let i=0; i < 6; i++)
-    numbers.push(Math.floor(Math.random() * 16))
-
-  return "#" + numbers.join('')
-  */
-
   let colors = [
     '#773333',
     '#337733',

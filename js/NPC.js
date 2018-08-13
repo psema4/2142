@@ -43,7 +43,7 @@ class NPC extends SpaceEntity {
         if (this.isActive && !this.isColliding) {
             this.isColliding = true
             this.cooldown = 120
-            player.hull -= 1
+            player.hull -= Math.floor(Math.random() * TOFE.difficulty[TOFE.selectedDifficulty].ship2shipDamage) + 1
             player.speak('hurt')
 
         } else {

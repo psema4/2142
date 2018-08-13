@@ -111,7 +111,7 @@ class SpaceTime {
                 })
 
             } else {
-                console.log('no juice!')
+                player.speak('text', 'No can do! Outta juice!')
                 this.timeDirection = 1
             }
         }
