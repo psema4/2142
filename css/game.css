@@ -5,7 +5,7 @@ div, canvas {
 }
 
 body {
-  background-color: #000;
+  background-color: #0a0a0a;
   padding: 0px;
 }
 
@@ -20,5 +20,5 @@ body {
 }
 canvas {
   border: 0px dashed #777;
-  background-color: #000;
+  background-color: #0a0a0a;
 }

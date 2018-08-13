@@ -226,16 +226,23 @@ function initializeGame() {
 
             var v = Math.floor(Math.random() * 100)
 
+            // Player can only locate and acquire artifacts after finding the Time Controller
             if (activePlanet.artifact && v >= 95) {
-              if (activePlanet.artifact == 'Time Controller')
-                player.timeJuice = 100
+              if (activePlanet.artifact == 'Time Controller') {
+                player.addArtifact(activePlanet.artifact)
+                player.timeJuice = 1000
 
-              player.addArtifact(activePlanet.artifact)
+                player.speak('text', `Discovered an alien ${activePlanet.artifact} artifact!`)
+                activePlanet.artifact = null
 
-              activePlanet.artifact = null
+              } else if (activePlanet.artifact != '') {
+                if (player.hasArtifact('Time Controller')) {
+                  player.addArtifact(activePlanet.artifact)
 
-              player.speak('text', `Discovered an alien ${activePlanet.artifact} artifact!`)
-              playerStats()
+                  player.speak('text', `Discovered an alien ${activePlanet.artifact} artifact!`)
+                  activePlanet.artifact = null
+                }
+              }
             }
 
           } else {
@@ -479,7 +486,7 @@ function createPlanets() {
     let startY = i == 0 ? -950 : Math.floor(Math.random() * (kontra.canvas.height - (radius * 4)- 300)) + 300
     let startSpeed = i == 0 ? 0 : 1
     let name = i == 0 ? 'Black Hole': 'Planet ' + i
-    let color = i == 0 ? '#FFFFFF' : randomRGB()
+    let color = i == 0 ? '#000000' : randomRGB()
 
     planets.push(new Planet({ radius, startX, startY, startSpeed, name, color, active: true }))
   }
