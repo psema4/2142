@@ -278,7 +278,14 @@ function initializeGame() {
             if (kontra.keys.pressed('up')) {
               if (!isPressed.up) {
                 isPressed.up = true
-                player.sprite.dy -= 1
+
+                if (player.fuel < 0) {
+                  player.fuel = 0
+
+                } else {
+                  player.fuel -= 1
+                  player.sprite.dy -= 1
+                }
               }
 
             } else {
@@ -288,7 +295,13 @@ function initializeGame() {
             if (kontra.keys.pressed('down')) {
               if (!isPressed.down) {
                 isPressed.down = true
-                player.sprite.dy += 1
+                if (player.fuel < 0) {
+                  player.fuel = 0
+
+                } else {
+                  player.fuel -= 1
+                  player.sprite.dy += 1
+                }
               }
 
             } else {
