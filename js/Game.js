@@ -15,7 +15,7 @@ var TOFE = {
     highContrast: {
       textColor: '#FFFFFF',
       font: '24px lucida console',
-      smallTextColor: '#FFFFFF',
+      smallTextColor: '#FFFF00',
       fontSmall: '12px lucida console',
     }
   },

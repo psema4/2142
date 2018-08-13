@@ -12,6 +12,10 @@ class Planet extends SpaceEntity {
         this.isColliding = false
         this.cooldown = 0
 
+        let planetNumber = (Math.floor(Math.random() * 5)) + 1
+        let image = new Image();
+        image.src = `img/sprites/planet${planetNumber}.png`;
+
         this.sprite = new kontra.sprite({
             x: opts.startX,
             y: opts.startY,
@@ -22,16 +26,23 @@ class Planet extends SpaceEntity {
             radius: opts.radius,
 
             render: function() {
-                this.context.fillStyle = this.color
+                let planetOffset = this.radius + 20
 
-                this.context.beginPath()
-                this.context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI)
-                this.context.fill()
+                if (this.name == 'Black Hole') {
+                    this.context.fillStyle = this.color
+                    this.context.beginPath()
+                    this.context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI)
+                    this.context.fill()
+
+                } else {
+                    this.context.drawImage(image, this.x - 128, this.y - 128)
+                    planetOffset = this.radius + 50
+                }
 
                 this.context.font = TOFE.theme[TOFE.selectedTheme].fontSmall
                 this.context.fillStyle = TOFE.theme[TOFE.selectedTheme].smallTextColor
                 this.context.textAlign = 'center'
-                this.context.fillText(`${this.name}`, this.x, this.y + this.radius + 20)
+                this.context.fillText(`${this.name}`, this.x, this.y + planetOffset)
             },
 
             collidesWith: function(object, offset = 0) {
