@@ -15,26 +15,31 @@ class NPC extends SpaceEntity {
         this.isColliding = false
         this.cooldown = 0
 
+        let shipNumber = (Math.floor(Math.random() * 3)) + 1
+        let image = new Image();
+        image.src = `img/sprites/ship${shipNumber}r.png`;
+
         this.sprite = kontra.sprite({
             x: opts.startX,
             y: opts.startY,
             color: opts.color,
-            width: 2 * opts.size,
-            height: opts.size,
+            width: 64,
+            height: 64,
             dx: /* TOFE.state === 'playing' && */ -1 * opts.startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
             radius: opts.radius || 2,
             speed: opts.startSpeed,
             name: `${prefix}-${id}-${build}`,
 
             render: function() {
-                this.context.fillStyle = this.color
+                //this.context.fillStyle = this.color
+                //this.context.fillRect(this.x - Math.floor(this.width/2), this.y - Math.floor(this.height/2), this.width, this.height)
 
-                this.context.fillRect(this.x - Math.floor(this.width/2), this.y - Math.floor(this.height/2), this.width, this.height)
+                this.context.drawImage(image, this.x - 32, this.y - 32)
 
                 this.context.font = TOFE.theme[TOFE.selectedTheme].fontSmall
                 this.context.fillStyle = TOFE.theme[TOFE.selectedTheme].smallTextColor
                 this.context.textAlign = 'center'
-                this.context.fillText(`${this.name}`, this.x, this.y + 20)
+                this.context.fillText(`${this.name}`, this.x, this.y + 32)
             },
         })
     }

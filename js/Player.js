@@ -14,21 +14,25 @@ class Player extends SpaceEntity {
         this._speaking = false
         this._message = ''
 
+        let image = new Image();
+        image.src = 'img/sprites/ship1.png';
+
         this.sprite = kontra.sprite({
             x: Math.floor(kontra.canvas.width / 2) - 20,
             y: Math.floor(kontra.canvas.height / 2) - 10,
             color: '#00DD00',
-            width: 40,
-            height: 20,
+            width: 64,
+            height: 64,
             dx: 0,
             radius: 2,
             speaking: false,
             message: '',
 
             render: function() {
-                this.context.fillStyle = this.color
+                //this.context.fillStyle = this.color
+                //this.context.fillRect(this.x - Math.floor(this.width/2), this.y - Math.floor(this.height/2), this.width, this.height)
 
-                this.context.fillRect(this.x - Math.floor(this.width/2), this.y - Math.floor(this.height/2), this.width, this.height)
+                this.context.drawImage(image, this.x - 32, this.y - 32)
 
                 if (!this.speaking && this.message != '') {
                     let self = this;
@@ -36,7 +40,7 @@ class Player extends SpaceEntity {
                     this.context.font = TOFE.theme[TOFE.selectedTheme].fontSmall
                     this.context.fillStyle = TOFE.theme[TOFE.selectedTheme].smallTextColor
                     this.context.textAlign = 'center'
-                    this.context.fillText(`${this.message}`, this.x, this.y - 20)
+                    this.context.fillText(`${this.message}`, this.x, this.y - 32)
 
                     setTimeout(() => { this.message = '' }, 1000)
                 }
