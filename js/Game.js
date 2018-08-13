@@ -11,12 +11,16 @@ var TOFE = {
       font: '24px lucida console',
       smallTextColor: '#FFFFFF',
       fontSmall: '12px lucida console',
+      largeTextColor: '#FFFFFF',
+      fontLarge: '48px lucida console',
     },
     highContrast: {
       textColor: '#FFFFFF',
       font: '24px lucida console',
       smallTextColor: '#FFFF00',
       fontSmall: '12px lucida console',
+      largeTextColor: '#FFFF',
+      fontLarge: '48px lucida console',
     }
   },
   selectedDifficulty: 'easy',
@@ -593,7 +597,13 @@ function firstLoadScreen() {
     let leftColumn = cx - 100
     let rightColumn = cx + 100
 
+    ctx.font = TOFE.theme[TOFE.selectedTheme].fontLarge
+    ctx.fillStyle = TOFE.theme[TOFE.selectedTheme].largeTextColor
     ctx.textAlign = 'center'
+    ctx.fillText('2142!', cx, 200)
+    
+    ctx.font = TOFE.theme[TOFE.selectedTheme].font
+    ctx.fillStyle = TOFE.theme[TOFE.selectedTheme].extColor
     currentY = 700
 
     if (cooldown == 0) {

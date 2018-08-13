@@ -10,12 +10,15 @@ class Powerup extends SpaceEntity {
         this.isColliding = false
         this.cooldown = 0
 
+        let image = new Image();
+        image.src = `img/sprites/pickup.png`;
+
         this.sprite = kontra.sprite({
             x: opts.startX,
             y: opts.startY,
             color: opts.color,
-            width: opts.size,
-            height: opts.size,
+            width: 32,
+            height: 32,
             dx: /* TOFE.state === 'playing' && */ -1 * opts.startSpeed * (spaceTime.timeDirection * spaceTime.timeMultiplier),
             type: opts.type || 'air',
             value: opts.value || 1,
@@ -23,9 +26,10 @@ class Powerup extends SpaceEntity {
             speed: opts.startSpeed,
 
             render: function() {
-                this.context.fillStyle = this.color
+                //this.context.fillStyle = this.color
+                //this.context.fillRect(this.x - Math.floor(this.width/2), this.y - Math.floor(this.height/2), this.width, this.height)
 
-                this.context.fillRect(this.x - Math.floor(this.width/2), this.y - Math.floor(this.height/2), this.width, this.height)
+                this.context.drawImage(image, this.x - 16, this.y - 16)
 
                 this.context.font = TOFE.theme[TOFE.selectedTheme].fontSmall
                 this.context.fillStyle = TOFE.theme[TOFE.selectedTheme].smallTextColor
