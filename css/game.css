@@ -22,7 +22,8 @@ body {
 canvas {
   border: 0px dashed #777;
   background-color: #0a0a0a;
-  background-image: url(../img/backgrounds/background1.png);
+  background-image: url(https://github.com/psema4/2142/raw/master/img/backgrounds/background1.png);
+  /* background-image: url(../img/backgrounds/background1.png); */
   background-size: cover;
 }
 
