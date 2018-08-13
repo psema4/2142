@@ -4,7 +4,7 @@ var TOFE = {
   state: 'init',
   debug: false,
   waitDelay: 10,
-  selectedTheme: 'default',
+  selectedTheme: 'highContrast',
   theme: {
     default: {
       textColor: '#FF0000',
@@ -473,7 +473,7 @@ function addPowerup(initSpawn = false) {
   if (spaceTime.timeDirection < 1)
     return
     
-  let types = [ 'air', 'water', 'food', 'fuel', 'hull', 'hull' ]
+  let types = [ 'air', 'water', 'food', 'fuel', 'fuel', 'fuel', 'hull', 'hull' ]
 
   if (player && player.hasArtifact('Time Controller')) {
     types.push('timeJuice')
