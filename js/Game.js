@@ -458,7 +458,7 @@ function addNPC(initSpawn = false) {
   let size = 10
   let startX = initSpawn ? Math.floor(Math.random() * 4096) - 2048 : Math.floor(Math.random() * 2048) + 2048
   let startY = Math.floor(Math.random() * kontra.canvas.height - (size * 4))
-  let startSpeed = Math.floor(Math.random() * 2) + 1
+  let startSpeed = ((Math.random() * 2) + 1).toFixed(2)
 
   npcs.push(new NPC({ startX, startY, size, startSpeed, color: '#FF0000', active: true }))
 }
@@ -485,7 +485,7 @@ function addPowerup(initSpawn = false) {
   let size = 5
   let startX = initSpawn ? Math.floor(Math.random() * 4096) - 2048 : Math.floor(Math.random() * 2048) + 2048
   let startY = Math.floor(Math.random() * kontra.canvas.height - (size * 4))
-  let startSpeed = Math.floor(Math.random() * 2) + 1
+  let startSpeed = ((Math.random() * 2) + 1).toFixed(2)
   let type = types[Math.floor(Math.random() * types.length)]
   let value = type == 'timeJuice' ? Math.floor(Math.random() * 1000) + 1 : Math.floor(Math.random() * 9) + 1
 
